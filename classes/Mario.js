@@ -1,11 +1,12 @@
 import { Animation } from './Animation.js'
 
 export class Mario extends Animation {
-    constructor(canvas, context, spritesheet, x, y, width, height, timePerFrame, numberOfFrames, w, h) {
+    constructor(canvas, context, currentMap, spritesheet, x, y, width, height, timePerFrame, numberOfFrames, w, h) {
         super(spritesheet, x, y, width, height, timePerFrame)
         this.canvas = canvas
         this.context = context
-        this.level = 0
+        this.currentMap = currentMap
+        this.level = 2
         this.drawAnimates = super.drawAnimated
         this.update = super.update
         this.w = w
@@ -22,40 +23,50 @@ export class Mario extends Animation {
         this.moving = false
     }
 
-    isOutsideCanvas() {
-        if (this.x >= canvas.width) {
-            this.x = -20
+    isTouchingFlag(){
+        if(this.x >= 1100){
+            this.x = 0
             this.level += 1
         }
     }
 
-    stay(drawMap, map) {
+    isTouchingSushi(){
+        this.currentMap.sushiCoordonates.forEach(sushi => {
+            let cond1 = this.x < sushi.x + 30 && this.x + this.w > sushi.x
+            let cond2 = this.y < sushi.y + 30 && this.y + this.h > sushi.y
+            if(cond1 && cond2){
+                sushi.collected = true
+                console.log('MARIO IS TOUCHING SUSHI')
+            }
+        });
+    }
+
+    stay(drawMap, mapObject) {
         setTimeout(() => {
-            drawMap(map)
+            drawMap(this.currentMap, mapObject)
             this.currentFrameSet = this.frameSet.stay
             this.moving = false
         }, 300)
     }
 
-    makeSteps(direction, map, drawMap) {
-        console.log(map, drawMap)
+    makeSteps(direction, mapObject, drawMap) {
         if (!this.moving) {
             let leftSteps = setInterval(() => {
                 if (this.steps === 4) {
                     clearInterval(leftSteps)
                     this.steps = 0
-                    this.stay(drawMap, map)
+                    this.stay(drawMap, mapObject)
                 }
                 if (direction === 'right') {
                     this.moving = true
-                    drawMap(map)
+                    drawMap(this.currentMap, mapObject)
                     this.currentFrameSet = this.frameSet.right
                     this.x = this.x + 10.5
                 }
 
                 if (direction === 'left') {
                     this.moving = true
-                    drawMap(map)
+                    drawMap(this.currentMap, mapObject)
                     this.currentFrameSet = this.frameSet.left
                     this.x = this.x - 10.5
                 }

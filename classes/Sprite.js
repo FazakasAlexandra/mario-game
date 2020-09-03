@@ -1,9 +1,9 @@
 export class Sprite{
-    constructor(imagePath, context){
+    constructor(imagePath, context, w, h){
         this.imagePath = imagePath
         this.context = context
-        this.w = 50, 
-        this.h = 50
+        this.w = w || 50, 
+        this.h = h || 50
         this.image = this.getImage()
     }
 

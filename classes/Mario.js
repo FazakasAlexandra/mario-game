@@ -22,13 +22,13 @@ export class Mario extends Animation {
         this.currentFrame = 0
         this.steps = 0
         this.moving = false
-        this.touchesBox = false
-        this.onTopOfBox = false
         this.touchedBox = null
         this.touchedBoxX = ''
-        this.touchedBoxY = ''
         this.isJummping = false
-        this.fallingPosition = this.canvas.height / 2
+        this.boxMaxY = 50
+        this.grassMaxY = this.canvas.height / 2
+        this.marioMinY = this.grassMaxY
+        this.marioMaxY = 20
         this.stepSound = document.querySelector('.stepSound')
     }
 
@@ -42,39 +42,29 @@ export class Mario extends Animation {
     checkCollision(object, objectW, objectH) {
         let cond1 = this.x < object.x + objectW && this.x + this.w > object.x
         let cond2 = this.y < object.y + objectH && this.y + this.h > object.y
-        if (cond1 && cond2) {
-            return true
-        }
+        if (cond1 && cond2) return true
     }
 
     isTouchingSushi() {
         this.currentMap.sushiCoordonates.forEach(sushi => {
-            if (this.checkCollision(sushi, 30, 30)) {
-                sushi.collected = true
-                console.log('MARIO IS TOUCHING SUSHI')
-            }
-        });
+            if (this.checkCollision(sushi, 30, 30)) sushi.collected = true
+
+        })
     }
 
     isTouchingBox() {
         this.currentMap.boxCoordonates.forEach(box => {
             if (this.checkCollision(box, 50, 50)) {
                 this.touchedBox = box
-                if(!this.isFalling || !this.isJummping){
-                    this.touchesBox = true
+                // places Mario on top of the box when falling is done
+                if (this.isFalling) {
+                    this.marioMinY = 50
                 }
-                // case collision & falling : place mario on top of the box
-                if(this.isFalling){
-                   this.fallingPosition = 50
-                }
+                // blocks right or left movement
                 this.touchedBoxX = box.x > this.x ? 'bigger' : 'smaller'
-                this.touchedBoxY = box.y > this.y ? 'bigger' : '' 
-                console.log('MARIO IS TOUCHING BOX')
             }
         });
-        //y = 85 -> mario on top
-        console.log(this.touchedBox,'x:', this.x, 'y :', this.y)
-        console.log(this.touchesBox)
+        console.log(this.touchedBox, 'x:', this.x, 'y :', this.y)
     }
 
     stay(drawMap, mapObject) {
@@ -83,6 +73,22 @@ export class Mario extends Animation {
             this.currentFrameSet = this.frameSet.stay
             this.moving = false
         }, 300)
+    }
+
+    makeRightSteps(mapObject, drawMap) {
+        this.touchedBoxX = ''
+        this.moving = true
+        drawMap(this.currentMap, mapObject)
+        this.currentFrameSet = this.frameSet.right
+        this.x = this.isJummping ? this.x + 15 : this.x + 10.5
+    }
+
+    makeLeftSteps(mapObject, drawMap) {
+        this.touchedBoxX = ''
+        this.moving = true
+        drawMap(this.currentMap, mapObject)
+        this.currentFrameSet = this.frameSet.left
+        this.x = this.isJummping ? this.x - 15 : this.x - 10.5
     }
 
     makeSteps(direction, mapObject, drawMap) {
@@ -94,28 +100,23 @@ export class Mario extends Animation {
                     this.stay(drawMap, mapObject)
                 }
 
-                if(this.touchedBoxX !== 'bigger' || this.isJummping || this.isFalling){
-                    if (direction === 'right') {
-                        this.touchedBoxX = ''
-                        this.moving = true
-                        console.log(this.x)
-                        drawMap(this.currentMap, mapObject)
-                        this.currentFrameSet = this.frameSet.right
-                        this.x = this.isJummping ? this.x + 15: this.x + 10.5
-                        //this.stepSound.play()
+                if (direction === 'right' && (this.touchedBoxX !== 'bigger' || this.isJummping || this.isFalling)) {
+                    if (this.touchedBox && this.x >= this.touchedBox.x) {
+                        this.marioMinY = this.grassMaxY
+                        this.fall(mapObject, drawMap)
                     }
+                    this.makeRightSteps(mapObject, drawMap)
+                    //this.stepSound.play()
                 }
 
-                if(this.touchedBoxX !== 'smaller' || this.isJummping || this.isFalling){
-                    if (direction === 'left') {
-                        this.touchedBoxX = ''
-                        this.moving = true
-                        console.log(this.x)
-                        drawMap(this.currentMap, mapObject)
-                        this.currentFrameSet = this.frameSet.left
-                        this.x = this.isJummping ? this.x - 15: this.x - 10.5
-                        //this.stepSound.play()
+                if (direction === 'left' && (this.touchedBoxX !== 'smaller' || this.isJummping || this.isFalling)) {
+                    if (this.touchedBox && this.x <= this.touchedBox.x) {
+                        this.marioMinY = this.grassMaxY
+                        this.fall(mapObject, drawMap)
                     }
+
+                    this.makeLeftSteps(mapObject, drawMap)
+                    //this.stepSound.play()
                 }
                 this.steps += 1
 
@@ -123,11 +124,11 @@ export class Mario extends Animation {
         }
     }
 
-    jump(mapObject, drawMap){
-        if(!this.isJummping){
+    jump(mapObject, drawMap) {
+        if (!this.isJummping) {
             this.isJummping = true
-            let jumpInterval = setInterval(()=>{
-                if(this.y <= 20){
+            let jumpInterval = setInterval(() => {
+                if (this.y <= this.marioMaxY) {
                     this.fall(mapObject, drawMap)
                     clearInterval(jumpInterval)
                 }
@@ -138,22 +139,21 @@ export class Mario extends Animation {
         }
     }
 
-    fall(mapObject, drawMap){
-            let fallInterval = setInterval(()=>{
-                this.isFalling = true
-                if(this.y === this.fallingPosition){
-                    this.isJummping = false
-                    this.isFalling = false
-                    clearInterval(fallInterval)
-                }
-                drawMap(this.currentMap, mapObject)
-                if(this.y < this.fallingPosition){
-                    // place Mario on the box
-                    this.isTouchingBox()
-                    // place Mario on the ground
-                    this.y = this.y + 10
-                }
-            }, 50)
-            console.log('FALLING')
+    fall(mapObject, drawMap) {
+        let fallInterval = setInterval(() => {
+            this.isFalling = true
+            this.isTouchingBox()
+            if (this.y === this.marioMinY) {
+                this.isJummping = false
+                this.isFalling = false
+                clearInterval(fallInterval)
+            }
+
+            drawMap(this.currentMap, mapObject)
+
+            if (this.y < this.marioMinY) this.y = this.y + 10
+
+        }, 50)
+        console.log('FALLING')
     }
 }

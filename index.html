@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mario</title>
-    <link rel="icon" 
-      type="image/png" 
-      href="./assets//objects/grass.png">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mario</title>
+        <link rel="icon" type="image/png" href="./assets//objects/grass.png">
+        <link rel="stylesheet" href="https://unpkg.com/papercss@1.7.0/dist/paper.min.css">
+        <link rel="stylesheet" href="style.css">
 </head>
-<style>
-</style>
+
 <body>
-        <canvas id = "map" height="250px" width="1200px" ></canvas>
+        <canvas id="map" height="250px" width="1200px"></canvas>
+        <span id="sushiNumbers"></span>
         <audio src="./assets//objects/walk-sound.flac" class="stepSound"></audio>
         <script src="index.js" type="module"></script>
+        <script src="game.js" type="module"></script>
 </body>
+
 </html>

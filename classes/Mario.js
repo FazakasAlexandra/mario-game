@@ -1,13 +1,16 @@
 import { Animation } from './Animation.js'
+import { Database } from './Database.js'
 
 export class Mario extends Animation {
-    constructor(canvas, context, currentMap, spritesheet, x, y, width, height, timePerFrame, numberOfFrames, w, h) {
+    constructor(canvas, context, currentMap, spritesheet, x, y, width, height, timePerFrame, numberOfFrames, w, h, player) {
         super(spritesheet, x, y, width, height, timePerFrame)
-        console.log(this.y)
+        this.name = player.Name
+        this.level = player.Level
+        this.sushi = player.Sushi
+        this.database = new Database()
         this.canvas = canvas
         this.context = context
         this.currentMap = currentMap
-        this.level = 3
         this.drawAnimates = super.drawAnimated
         this.update = super.update
         this.w = w
@@ -23,9 +26,13 @@ export class Mario extends Animation {
         this.steps = 0
         this.moving = false
         this.touchedBox = null
-        this.touchedBoxX = ''
+        this.movementRestriction = {
+            right: false,
+            left: true
+        }
         this.isJummping = false
-        this.boxMaxY = 50
+        this.onTopOfBox = false
+        this.boxMaxY = 75
         this.grassMaxY = this.canvas.height / 2
         this.marioMinY = this.grassMaxY
         this.marioMaxY = 20
@@ -36,6 +43,7 @@ export class Mario extends Animation {
         if (this.x >= 1100) {
             this.x = 0
             this.level += 1
+            this.database.upadatePlayerLevel(this.name, this.level)
         }
     }
 
@@ -47,24 +55,13 @@ export class Mario extends Animation {
 
     isTouchingSushi() {
         this.currentMap.sushiCoordonates.forEach(sushi => {
-            if (this.checkCollision(sushi, 30, 30)) sushi.collected = true
-
-        })
-    }
-
-    isTouchingBox() {
-        this.currentMap.boxCoordonates.forEach(box => {
-            if (this.checkCollision(box, 50, 50)) {
-                this.touchedBox = box
-                // places Mario on top of the box when falling is done
-                if (this.isFalling) {
-                    this.marioMinY = 50
-                }
-                // blocks right or left movement
-                this.touchedBoxX = box.x > this.x ? 'bigger' : 'smaller'
+            if (this.checkCollision(sushi, 30, 30)) {
+                sushi.collected = true
+                this.sushi += 1
+                document.getElementById('sushiNumbers').innerText = this.sushi
+                this.database.upadatePlayerSushi(this.name, this.sushi)
             }
-        });
-        console.log(this.touchedBox, 'x:', this.x, 'y :', this.y)
+        })
     }
 
     stay(drawMap, mapObject) {
@@ -76,7 +73,7 @@ export class Mario extends Animation {
     }
 
     makeRightSteps(mapObject, drawMap) {
-        this.touchedBoxX = ''
+        this.movementRestriction.left = false
         this.moving = true
         drawMap(this.currentMap, mapObject)
         this.currentFrameSet = this.frameSet.right
@@ -84,7 +81,7 @@ export class Mario extends Animation {
     }
 
     makeLeftSteps(mapObject, drawMap) {
-        this.touchedBoxX = ''
+        this.movementRestriction.right = false
         this.moving = true
         drawMap(this.currentMap, mapObject)
         this.currentFrameSet = this.frameSet.left
@@ -100,21 +97,18 @@ export class Mario extends Animation {
                     this.stay(drawMap, mapObject)
                 }
 
-                if (direction === 'right' && (this.touchedBoxX !== 'bigger' || this.isJummping || this.isFalling)) {
-                    if (this.touchedBox && this.x >= this.touchedBox.x) {
-                        this.marioMinY = this.grassMaxY
-                        this.fall(mapObject, drawMap)
+                if (direction === 'right' && (!this.movementRestriction.right || this.isJummping || this.onTopOfBox)) {
+                    if (this.touchedBox && this.x > this.touchedBox.x) {
+                        this.fallFromBox(mapObject, drawMap)
                     }
                     this.makeRightSteps(mapObject, drawMap)
                     //this.stepSound.play()
                 }
 
-                if (direction === 'left' && (this.touchedBoxX !== 'smaller' || this.isJummping || this.isFalling)) {
-                    if (this.touchedBox && this.x <= this.touchedBox.x) {
-                        this.marioMinY = this.grassMaxY
-                        this.fall(mapObject, drawMap)
+                if (direction === 'left' && (!this.movementRestriction.left || this.isJummping || this.onTopOfBox)) {
+                    if (this.touchedBox && this.x < this.touchedBox.x) {
+                        this.fallFromBox(mapObject, drawMap)
                     }
-
                     this.makeLeftSteps(mapObject, drawMap)
                     //this.stepSound.play()
                 }
@@ -124,26 +118,70 @@ export class Mario extends Animation {
         }
     }
 
+    fallFromBox(mapObject, drawMap) {
+        this.onTopOfBox = false
+        this.touchedBox = null
+        this.marioMinY = this.grassMaxY
+        this.movementRestriction.left = false
+        this.movementRestriction.right = false
+        this.fall(mapObject, drawMap)
+    }
+
     jump(mapObject, drawMap) {
         if (!this.isJummping) {
             this.isJummping = true
             let jumpInterval = setInterval(() => {
-                if (this.y <= this.marioMaxY) {
+                if (this.y < this.marioMaxY) {
                     this.fall(mapObject, drawMap)
                     clearInterval(jumpInterval)
                 }
                 drawMap(this.currentMap, mapObject)
                 this.y = this.y - 10
             }, 50)
-            console.log('JUMMPING')
         }
     }
 
+    setMovementRestriction(box) {
+            if (box.x > this.x) {
+                this.movementRestriction.right = true
+            }
+    
+            if (box.x < this.x) {
+                this.movementRestriction.left = true
+            }
+    }
+
+    isTouchingBox() {
+        let touching = false
+        this.currentMap.boxCoordonates.forEach(box => {
+            if (this.checkCollision(box, 50, 50)) {
+                this.touchedBox = box
+                touching = true
+                this.setMovementRestriction(box)
+            }
+        });
+        return touching
+    }
+
+    isfallingOnBox() {
+        // falls on box or not
+        if (this.isTouchingBox()) {
+            this.marioMinY = this.boxMaxY
+        }
+    }
+
+
     fall(mapObject, drawMap) {
+        this.isFalling = true
+
         let fallInterval = setInterval(() => {
-            this.isFalling = true
-            this.isTouchingBox()
+            if (this.level === 3) this.isfallingOnBox()
+
             if (this.y === this.marioMinY) {
+                if(this.marioMinY === this.boxMaxY){
+                    this.onTopOfBox = true
+                }
+                console.log('clear')
                 this.isJummping = false
                 this.isFalling = false
                 clearInterval(fallInterval)
@@ -154,6 +192,5 @@ export class Mario extends Animation {
             if (this.y < this.marioMinY) this.y = this.y + 10
 
         }, 50)
-        console.log('FALLING')
     }
 }

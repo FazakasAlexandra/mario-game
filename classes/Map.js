@@ -30,7 +30,7 @@ export class Map {
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 3,
+                    0, 2, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 3,
                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                 ],
                 grass: new Sprite('./assets/objects/grass2.png', this.context),
@@ -50,7 +50,7 @@ export class Map {
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 4, 0, 0, 2, 4, 0, 0, 0, 0, 0, 4, 4, 4, 0, 2, 0, 0, 0, 0, 3,
+                    0, 0, 4, 4, 4, 0, 0, 2, 4, 0, 0, 0, 0, 0, 4, 4, 4, 0, 2, 0, 0, 0, 0, 3,
                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                 ],
                 grass: new Sprite('./assets/objects/grass2.png', this.context),
@@ -100,7 +100,6 @@ export class Map {
     }
 
     drawFirstMap(tile, map, self) {
-        console.log(tile)
         switch (tile) {
             case 0:
                 this.makeSkyTile(self, map)
@@ -135,7 +134,7 @@ export class Map {
 
             case 2:
                 self.makeSkyTile(self, map)
-                self.removeCollectedItems(map, map.sushiCoordonates, map.remainedSushi)
+                self.removeCollectedItems(map, map.sushiCoordonates)
                 map.sushi.drawSprite(self.tileX, self.tileY + 15)
                 if (map.sushiCoordonates.length < map.remainedSushi) {
                     map.sushiCoordonates.push({ x: self.tileX, y: self.tileY, index: self.mapIndex })
@@ -162,9 +161,9 @@ export class Map {
                 break
             case 2:
                 self.makeSkyTile(self, map)
-                self.removeCollectedItems(map, map.sushiCoordonates, map.remainedSushi)
+                self.removeCollectedItems(map, map.sushiCoordonates)
                 map.sushi.drawSprite(self.tileX, self.tileY + 15)
-                if (map.sushiCoordonates.length < map.remainedSushi) {
+                if (map.sushiCoordonates.length !== map.remainedSushi) {
                     map.sushiCoordonates.push({ x: self.tileX, y: self.tileY, index: self.mapIndex })
                 }
                 break
@@ -187,7 +186,7 @@ export class Map {
         self.context.fillRect(self.tileX, self.tileY, 50, 50);
     }
 
-    removeCollectedItems(map, coordonates, remainedItems, i = 0) {
+    removeCollectedItems(map, coordonates, i = 0) {
         if (i === coordonates.length || coordonates.length === 0) {
             return
         }
@@ -195,10 +194,10 @@ export class Map {
         if (coordonates[i].collected) {
             map.grid[coordonates[i].index] = 0
             coordonates.splice(i, 1)
-            remainedItems -= 1
-            return this.removeCollectedItems(map, coordonates, remainedItems, i)
+            map.remainedSushi -= 1
+            return this.removeCollectedItems(map, coordonates, i)
         }
 
-        return this.removeCollectedItems(map, coordonates, remainedItems, i + 1)
+        return this.removeCollectedItems(map, coordonates, i + 1)
     }
 }

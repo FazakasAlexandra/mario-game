@@ -1,0 +1,48 @@
+#register-container{
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    width: fit-content;
+    padding-left: 15%;
+    padding-right: 15%;
+    padding-bottom: 3rem;
+    padding-bottom: 3rem;
+    border-style: solid;
+    border-width: 0.2rem;
+    margin: auto;
+    margin-top: 1rem;
+    box-shadow: 0px 2px 29px -14px rgba(0,0,0,0.7);
+}
+
+canvas {
+    display: none;
+}
+
+#create-container, #play-container{
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+}
+
+#icons-container{
+display: flex;
+justify-content: space-between;
+}
+input{
+    height: 3rem;
+}
+
+button{
+    width: 5rem;
+    margin-left: 1rem;
+}
+
+.character-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.character-option input {
+    width: 1.2rem;
+}

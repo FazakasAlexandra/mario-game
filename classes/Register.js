@@ -36,31 +36,40 @@ export class Register {
     createRegisterContainer() {
         const registerContainer = document.createElement('div')
         registerContainer.id = 'register-container'
+        registerContainer.className = 'breadcrumb border'
         document.body.appendChild(registerContainer)
         registerContainer.innerHTML = `<h3>create character</h3>
+                                       <div id='icons-container'>
+
+                                       <div class="character-option">
+                                       <img src="${this.icons.redGirl}"/>
+                                       <input data-width="80" data-height="80" type="radio" name="character" value=${this.spriteSheets.redGirl}>
+                                       </div>
+
+                                       <div class="character-option">
+                                       <img src="${this.icons.alexandra}"/>
+                                       <input data-width="80" data-height="80" type="radio" name="character" value=${this.spriteSheets.alexandra}>
+                                       </div>
+
+                                       <div class="character-option"> 
+                                       <img src="${this.icons.mario}"/>
+                                       <input data-width="80" data-height="80" type="radio" name="character" value=${this.spriteSheets.mario}>
+                                       </div>
+
+                                       <div class="character-option">
+                                       <img src="${this.icons.charles}"/>
+                                       <input data-width="80" data-height="80" type="radio" name="character" value=${this.spriteSheets.charles}>
+                                       </div>
+
+                                       </div>
+
                                        <div id = create-container>
                                        <input type=text placeholder="name"/>
                                        <button id='create'>Create</button>
                                        </div>
-                                       <div id='icons-container'>
-                                       <div class="character-option">
-                                       <input data-width="80" data-height="80" type="radio" name="character" value=${this.spriteSheets.redGirl}>
-                                       <img src="${this.icons.redGirl}"/>
-                                       </div>
-                                       <div class="character-option">
-                                       <input data-width="80" data-height="80" type="radio" name="character" value=${this.spriteSheets.alexandra}>
-                                       <img src="${this.icons.alexandra}"/>
-                                       </div>
-                                       <div class="character-option"> 
-                                       <input data-width="80" data-height="80" type="radio" name="character" value=${this.spriteSheets.mario}>
-                                       <img src="${this.icons.mario}"/>
-                                       </div>
-                                       <div class="character-option">
-                                       <input data-width="80" data-height="80" type="radio" name="character" value=${this.spriteSheets.charles}>
-                                       <img src="${this.icons.charles}"/>
-                                       </div>
-                                       </div>
+
                                        <h4>already have a character?</h4>
+                                       
                                        <div id = play-container>
                                        <input type=text placeholder="name"/>
                                        <button id='play'>PLAY</button>

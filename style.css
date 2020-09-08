@@ -1,4 +1,4 @@
-#register-container{
+#register-container {
     display: flex;
     flex-direction: column;
     height: fit-content;
@@ -7,32 +7,62 @@
     padding-right: 15%;
     padding-bottom: 3rem;
     padding-bottom: 3rem;
-    border-style: solid;
-    border-width: 0.2rem;
     margin: auto;
-    margin-top: 1rem;
-    box-shadow: 0px 2px 29px -14px rgba(0,0,0,0.7);
+    margin-top: 2rem;
+    box-shadow: 0px 2px 29px -14px rgba(0, 0, 0, 0.7);
 }
 
+#register-container h3{
+    margin-left: 1rem;
+}
+
+#register-container h4{
+    margin-left: 0.5rem;
+}
 canvas {
     display: none;
 }
 
-#create-container, #play-container{
+#game-containe{
+    position: relative;
+}
+#game-info-container {
+    display: flex;
+    display: none;
+    padding: 1rem;
+    width: 200px;
+    position: absolute;
+    margin: 0.2rem;
+}
+
+#game-info-container img {
+    margin-right: 0.2rem;
+    border: none;
+}
+
+#game-info{
+    display: flex;
+    align-items: center;
+}
+
+
+#create-container,
+#play-container {
     display: flex;
     width: fit-content;
     height: fit-content;
 }
 
-#icons-container{
-display: flex;
-justify-content: space-between;
+#icons-container {
+    display: flex;
+    justify-content: space-between;
 }
-input{
+
+input {
     height: 3rem;
 }
 
-button{
+button {
     width: 5rem;
     margin-left: 1rem;
 }
@@ -41,6 +71,9 @@ button{
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+.character-option img{
+    background-color: #66B3FF;;
 }
 
 .character-option input {

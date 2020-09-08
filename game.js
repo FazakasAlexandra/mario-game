@@ -37,6 +37,7 @@ export default function play(player) {
             player)
 
         document.getElementById('sushiNumbers').innerText = mario.sushi
+        document.querySelector('#game-info-container').style.display = 'block'
 
         loop()
     }

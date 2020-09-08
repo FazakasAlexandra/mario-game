@@ -11,8 +11,14 @@
 </head>
 
 <body>
+        <div id='game-info-container'>
+                <div id="game-info">
+                        <img src="./assets/objects/sushi.png" alt="sushi" height="15px" width="15px">
+                        <span id="level"></span>
+                        <span id="sushiNumbers"></span>
+                </div>
+        </div>
         <canvas id="map" height="250px" width="1200px"></canvas>
-        <span id="sushiNumbers"></span>
         <audio src="./assets//objects/walk-sound.flac" class="stepSound"></audio>
         <script src="index.js" type="module"></script>
         <script src="game.js" type="module"></script>

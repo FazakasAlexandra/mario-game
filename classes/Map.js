@@ -1,72 +1,12 @@
 import { Sprite } from './Sprite.js'
+import { Database } from './Database.js'
 
 export class Map {
     constructor(context) {
-        // 50 px each tile
         this.context = context
-        this.mapModels = {
-            firstMap: {
-                level: 1,
-                grid: [
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                ],
-                grass: new Sprite('./assets/objects/grass3.png', this.context),
-                cloud: new Sprite('./assets/objects/cloud.png', this.context),
-                flag: new Sprite('./assets/objects/flag.png', this.context, 70, 70),
-                skyColor: "#66b3ff",
-                flagCoordonates: {
-                    x: null,
-                    y: null
-                }
-
-            },
-            secondMap: {
-                level: 2,
-                grid: [
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 2, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 3,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                ],
-                grass: new Sprite('./assets/objects/grass2.png', this.context),
-                sushi: new Sprite('./assets/objects/sushi.png', this.context, 30, 30),
-                flag: new Sprite('./assets/objects/flag.png', this.context, 70, 70),
-                skyColor: '#A0D8FB',
-                flagCoordonates: {
-                    x: null,
-                    y: null
-                },
-                sushiCoordonates: [],
-                remainedSushi: 4
-            },
-            thirdMap: {
-                level: 3,
-                grid: [
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 4, 4, 4, 0, 0, 2, 4, 0, 0, 0, 0, 0, 4, 4, 4, 0, 2, 0, 0, 0, 0, 3,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                ],
-                grass: new Sprite('./assets/objects/grass2.png', this.context),
-                sushi: new Sprite('./assets/objects/sushi.png', this.context, 30, 30),
-                flag: new Sprite('./assets/objects/flag.png', this.context, 70, 70),
-                box: new Sprite('./assets/objects/wood.png', this.context),
-                skyColor: '#66b3ff',
-                flagCoordonates: {
-                    x: null,
-                    y: null
-                },
-                sushiCoordonates: [],
-                boxCoordonates: [] ,
-                remainedSushi: 5
-            }
-        }
+        this.database = new Database()
+        this.database.getMaps(this.makeMapModels, this)
+        this.mapModels = []
         this.currentMap = this.mapModels.firstMap
         this.mapIndex = 0
         this.w = 50
@@ -75,6 +15,40 @@ export class Map {
         this.tileY = 0
     }
 
+    makeMapModels(maps,self){
+        maps.forEach((map, i) => {
+            let strArr = map.grid.split(",")
+            let nrArr = self.getNumbersArr(strArr)
+            maps[i].grid = nrArr
+
+            self.mapModels.push({
+                level: map.level,
+                grid: map.grid,
+                skyColor: map.skyColor,
+                grass: new Sprite(map.grass, self.context),
+                box: new Sprite(map.box, self.context),
+                sushi: new Sprite(map.sushi, self.context, 30, 30),
+                flag: new Sprite(map.flag, self.context, 70, 70),
+                cloud: map.cloud ? new Sprite(map.cloud, self.context) : null,
+                boxCoordonates: [],
+                sushiCoordonates: [],
+                remainedSushi : map.remainedSushi,
+                flagCoordonates: {
+                    x: null,
+                    y: null
+                }
+            })
+        });
+    }
+
+    getNumbersArr(strArr, nrArr = []){
+        strArr.forEach(el => {
+            el.trim()
+            nrArr.push(+el)
+        })
+        return nrArr
+    }
+    
     drawMap(map, self = this) {
         self.mapIndex = 0
 

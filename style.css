@@ -8,8 +8,8 @@
     padding-bottom: 3rem;
     padding-bottom: 3rem;
     margin: auto;
-    margin-top: 2rem;
-    box-shadow: 0px 2px 29px -14px rgba(0, 0, 0, 0.7);
+    margin-top: 2.5rem;
+
 }
 
 #register-container h3{
@@ -23,28 +23,26 @@ canvas {
     display: none;
 }
 
-#game-containe{
-    position: relative;
-}
 #game-info-container {
-    display: flex;
-    display: none;
     padding: 1rem;
-    width: 200px;
-    position: absolute;
-    margin: 0.2rem;
 }
 
-#game-info-container img {
+#game-info img {
     margin-right: 0.2rem;
     border: none;
 }
 
 #game-info{
-    display: flex;
+    position: absolute;
+    display: none;
+    margin: 0.2rem;
     align-items: center;
+    width: fit-content
 }
 
+#update-info{
+    margin-left: 2rem;
+}
 
 #create-container,
 #play-container {

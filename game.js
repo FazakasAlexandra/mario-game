@@ -1,7 +1,7 @@
 import { Mario } from './classes/Mario.js'
 import { Map } from './classes/Map.js'
 
-let canvas, context, mario, marioSpritesheet, map
+let canvas, context, mario, map
 
 export default function play(player) {
     canvas = document.getElementById('map')
@@ -12,8 +12,9 @@ export default function play(player) {
         console.log('first loaded')
 
         const spriteSheet = new Image()
-        spriteSheet.src = player.spriteSheet 
+        spriteSheet.src = player.spriteSheet
         map = new Map(context)
+        console.log(map)
         mario = new Mario(canvas,
             context,
             map.firstMap,
@@ -37,7 +38,7 @@ export default function play(player) {
             player)
 
         document.getElementById('sushiNumbers').innerText = mario.sushi
-        document.querySelector('#game-info-container').style.display = 'block'
+        document.querySelector('#game-info').style.display = 'flex'
 
         loop()
     }
@@ -46,24 +47,14 @@ export default function play(player) {
 
     function renderMap() {
         setInterval(() => {
-            if (mario.level === 1) {
-                console.log('render canvas')
-                map.currentMap = map.mapModels.firstMap
-                mario.currentMap = map.currentMap
-                map.drawMap(map.currentMap)
-            }
-
-            if (mario.level === 2) {
-                map.currentMap = map.mapModels.secondMap
-                mario.currentMap = map.currentMap
-                map.drawMap(map.currentMap)
-            }
-
-            if (mario.level === 3) {
-                map.currentMap = map.mapModels.thirdMap
-                mario.currentMap = map.currentMap
-                map.drawMap(map.currentMap)
-            }
+             map.mapModels.forEach((model, i) => {
+                if (model.level === mario.level) {
+                    console.log(model)
+                    map.currentMap = map.mapModels[i]
+                    mario.currentMap = map.currentMap
+                    map.drawMap(map.currentMap)
+                }
+            }) 
 
         }, 1000)
     }

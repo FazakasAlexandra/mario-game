@@ -1,6 +1,7 @@
 export class Database {
     constructor() {
-        this.baseURL = 'http://localhost/players/db'
+        this.baseURL = 'http://localhost/game/sushigo/players'
+        this.infoUpdateContainer = document.querySelector('#update-info')
     }
 
     getPlayers() {
@@ -13,7 +14,7 @@ export class Database {
             }
         };
 
-        xhttp.open("GET", `${this.baseURL}/get-players.php`, true);
+        xhttp.open("GET", `${this.baseURL}/get_players.php`, true);
         xhttp.send();
     }
 
@@ -26,7 +27,7 @@ export class Database {
             }
           };
         
-        xhttp.open("GET", `${this.baseURL}/get-player.php?Name=${name}`, true);
+        xhttp.open("GET", `${this.baseURL}/get_player.php?Name=${name}`, true);
         xhttp.send();
       }
 
@@ -40,7 +41,7 @@ export class Database {
                 cb(playerObject)
             }
         }
-        xhttp.open('POST', `${this.baseURL}/post-player.php`)
+        xhttp.open('POST', `${this.baseURL}/post_player.php`)
         xhttp.setRequestHeader('Content-Type', 'application/json')
         xhttp.send(JSONplayer)
     }
@@ -49,7 +50,10 @@ export class Database {
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
-                console.log(this.response)
+               document.querySelector('#update-info').innerHTML = this.response
+               setTimeout(()=>{
+                document.querySelector('#update-info').innerHTML = ''
+               }, 1000)
             }
         }
 
@@ -68,4 +72,20 @@ export class Database {
         xhttp.open("PUT", `${this.baseURL}/update_player_level.php?Name=${name}&Level=${level}`)
         xhttp.send();
     }
+
+    getMaps(cb, mapContext) {
+        fetch('http://localhost/game/sushigo/maps/get_maps.php')
+          .then(response => response.json())
+          .then(data => {
+            cb(data, mapContext)
+          })
+      }
+      
+      getMap(cb, level){
+        fetch(`http://localhost/game/sushigo/maps/get_maps?${level}=1.php`)
+        .then(response => response.json())
+        .then(data => {
+          cb(data)
+        })
+      }
 }

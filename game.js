@@ -103,11 +103,11 @@ export default function play(player) {
 
     })
 
-    //blocks default horizontal scrolling by left/right arrow keys
+     //blocks default horizontal scrolling by left/right arrow keys
     window.addEventListener("keydown", function (e) {
         // space and arrow keys
-        if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+        if ([32].indexOf(e.keyCode) > -1) {
             e.preventDefault();
         }
-    }, false);
+    }, false); 
 }

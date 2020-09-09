@@ -1,5 +1,6 @@
 import { Sprite } from './Sprite.js'
 import { Database } from './Database.js'
+import {getNumbersArr} from '../utilities.js'
 
 export class Map {
     constructor(context) {
@@ -18,7 +19,7 @@ export class Map {
     makeMapModels(maps, self) {
         maps.forEach((map, i) => {
             let strArr = map.grid.split(",")
-            let nrArr = self.getNumbersArr(strArr)
+            let nrArr = getNumbersArr(strArr)
             maps[i].grid = nrArr
 
             self.mapModels.push({
@@ -30,23 +31,15 @@ export class Map {
                 sushi: new Sprite(map.sushi, self.context, 30, 30),
                 flag: new Sprite(map.flag, self.context, 70, 70),
                 cloud: map.cloud ? new Sprite(map.cloud, self.context) : null,
-                boxCoordonates: [],
-                sushiCoordonates: [],
+                boxCoordinates: [],
+                sushiCoordinates: [],
                 remainedSushi: map.remainedSushi,
-                flagCoordonates: {
+                flagCoordinates: {
                     x: null,
                     y: null
                 }
             })
         });
-    }
-
-    getNumbersArr(strArr, nrArr = []) {
-        strArr.forEach(el => {
-            el.trim()
-            nrArr.push(+el)
-        })
-        return nrArr
     }
 
     drawMap(map, self = this) {
@@ -58,7 +51,7 @@ export class Map {
                 self.tileY = y * self.h
 
                 self.makeSkyTile(self, map)
-                
+
                 switch (map.grid[self.mapIndex]) {
                     case 0:
                         if (map.level === 1) {
@@ -73,22 +66,22 @@ export class Map {
                         break
 
                     case 2:
-                        self.removeCollectedItems(map, map.sushiCoordonates)
+                        self.removeCollectedItems(map, 'sushiCoordinates')
                         map.sushi.drawSprite(self.tileX, self.tileY + 15)
-                        if (map.sushiCoordonates.length < map.remainedSushi) {
-                            map.sushiCoordonates.push({ x: self.tileX, y: self.tileY, index: self.mapIndex })
+                        if (map.sushiCoordinates.length < map.remainedSushi) {
+                            map.sushiCoordinates.push({ x: self.tileX, y: self.tileY, index: self.mapIndex })
                         }
                         break
 
                     case 3:
                         map.flag.drawSprite(self.tileX - 20, self.tileY)
-                        map.flagCoordonates.x = self.tileX
-                        map.flagCoordonates.y = self.tileY
+                        map.flagCoordinates.x = self.tileX
+                        map.flagCoordinates.y = self.tileY
                         break
 
                     case 4:
                         map.box.drawSprite(self.tileX, self.tileY)
-                        map.boxCoordonates.push({ x: self.tileX, y: self.tileY, index: self.mapIndex })
+                        map.boxCoordinates.push({ x: self.tileX, y: self.tileY, index: self.mapIndex })
                         break
                 }
 
@@ -96,25 +89,17 @@ export class Map {
         }
     }
 
-
     makeSkyTile(self, map) {
         self.context.fillStyle = map.skyColor
         self.context.fillRect(self.tileX, self.tileY, 50, 50);
     }
 
-    removeCollectedItems(map, coordonates, i = 0) {
-        //fileter
-        if (i === coordonates.length || coordonates.length === 0) {
-            return
-        }
-
-        if (coordonates[i].collected) {
-            map.grid[coordonates[i].index] = 0
-            coordonates.splice(i, 1)
-            map.remainedSushi -= 1
-            return this.removeCollectedItems(map, coordonates, i)
-        }
-
-        return this.removeCollectedItems(map, coordonates, i + 1)
+    removeCollectedItems(map, coordType) {
+        map[coordType] =  map[coordType].filter(item => {
+            if (item.collected) {
+                map.grid[item.index] = 0
+                map.remainedSushi--
+            } else return item
+        })
     }
 }

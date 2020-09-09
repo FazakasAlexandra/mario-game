@@ -41,8 +41,8 @@ export class Register {
 
         registerContainer.classList.add('border','border-primary','shadow')
         document.body.appendChild(registerContainer)
-        registerContainer.innerHTML = `<h3>create character</h3>
-
+        registerContainer.innerHTML = `<img src="../assets/logo.png" id="logo"/>
+                          
                                        <div id='icons-container'>
                                        ${this.getOptions()}
                                        </div>

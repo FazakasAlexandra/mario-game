@@ -1,3 +1,5 @@
+import {i2xy} from '../utilities.js'
+
 export class Animation {
     constructor(spritesheet, x, y, width, height, timePerFrame) {
         this.spritesheet = spritesheet
@@ -46,13 +48,6 @@ export class Animation {
                           50)
     }
 
-    i2xy(index, mapWidth) {
-        let x = index % mapWidth
-        let y = Math.floor(index/mapWidth)
-    
-        return [x,y]
-    }
-
     drawAnimated(context,frames) {
         //frameSets = [[1,2,3], 
         //             [4,5,6], 
@@ -61,7 +56,7 @@ export class Animation {
         //frame = frames[framesIndex]
             this.currentFrame = frames[this.frameIndex]
 
-            const res = this.i2xy(this.currentFrame, this.numberOfFrames)
+            const res = i2xy(this.currentFrame, this.numberOfFrames)
             
             const clipedWidth = this.spritesheet.width / this.numberOfFrames
             const clipedHeight = this.spritesheet.height / this.numberOfFrames;

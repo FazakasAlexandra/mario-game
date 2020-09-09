@@ -54,7 +54,7 @@ export class Mario extends Animation {
     }
 
     isTouchingSushi() {
-        this.currentMap.sushiCoordonates.forEach(sushi => {
+        this.currentMap.sushiCoordinates.forEach(sushi => {
             if (this.checkCollision(sushi, 30, 30)) {
                 sushi.collected = true
                 this.sushi += 1
@@ -107,6 +107,7 @@ export class Mario extends Animation {
 
                 if (direction === 'left' && (!this.movementRestriction.left || this.isJummping || this.onTopOfBox)) {
                     if (this.touchedBox && this.x < this.touchedBox.x) {
+                       
                         this.fallFromBox(mapObject, drawMap)
                     }
                     this.makeLeftSteps(mapObject, drawMap)
@@ -153,7 +154,7 @@ export class Mario extends Animation {
 
     isTouchingBox() {
         let touching = false
-        this.currentMap.boxCoordonates.forEach(box => {
+        this.currentMap.boxCoordinates.forEach(box => {
             if (this.checkCollision(box, 50, 50)) {
                 this.touchedBox = box
                 touching = true

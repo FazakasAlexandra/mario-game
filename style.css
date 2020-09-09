@@ -8,23 +8,21 @@
     padding-bottom: 3rem;
     padding-bottom: 3rem;
     margin: auto;
-    margin-top: 2.5rem;
+    margin-top: 1.5rem;
 
 }
 
-#register-container h3{
-    margin-left: 1rem;
-}
 
-#register-container h4{
-    margin-left: 0.5rem;
+#register-container #logo {
+border: none;
+margin-bottom: 1rem;
 }
 canvas {
     display: none;
 }
 
 #game-info-container {
-    padding: 1rem;
+    padding: 1.5rem;
 }
 
 #game-info img {

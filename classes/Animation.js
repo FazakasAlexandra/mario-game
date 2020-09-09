@@ -36,18 +36,6 @@ export class Animation {
         }
     }
 
-    draw(context){
-        context.drawImage(this.spritesheet,
-                          this.frameIndex * this.width / this.numberOfFrames,
-                          0,
-                          this.width / this.numberOfFrames,
-                          this.height,
-                          this.x,
-                          this.y,
-                          50,
-                          50)
-    }
-
     drawAnimated(context,frames) {
         //frameSets = [[1,2,3], 
         //             [4,5,6], 

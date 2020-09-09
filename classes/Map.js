@@ -15,7 +15,7 @@ export class Map {
         this.tileY = 0
     }
 
-    makeMapModels(maps,self){
+    makeMapModels(maps, self) {
         maps.forEach((map, i) => {
             let strArr = map.grid.split(",")
             let nrArr = self.getNumbersArr(strArr)
@@ -32,7 +32,7 @@ export class Map {
                 cloud: map.cloud ? new Sprite(map.cloud, self.context) : null,
                 boxCoordonates: [],
                 sushiCoordonates: [],
-                remainedSushi : map.remainedSushi,
+                remainedSushi: map.remainedSushi,
                 flagCoordonates: {
                     x: null,
                     y: null
@@ -41,14 +41,14 @@ export class Map {
         });
     }
 
-    getNumbersArr(strArr, nrArr = []){
+    getNumbersArr(strArr, nrArr = []) {
         strArr.forEach(el => {
             el.trim()
             nrArr.push(+el)
         })
         return nrArr
     }
-    
+
     drawMap(map, self = this) {
         self.mapIndex = 0
 
@@ -57,103 +57,45 @@ export class Map {
                 self.tileX = x * self.w
                 self.tileY = y * self.h
 
-                switch (map.level) {
+                self.makeSkyTile(self, map)
+                
+                switch (map.grid[self.mapIndex]) {
+                    case 0:
+                        if (map.level === 1) {
+                            if (Math.floor(Math.random() < 0.05)) {
+                                map.cloud.drawSprite(self.tileX, self.tileY)
+                            }
+                        }
+                        break
+
                     case 1:
-                        self.drawFirstMap(map.grid[self.mapIndex], map, self)
+                        map.grass.drawSprite(self.tileX, self.tileY)
                         break
 
                     case 2:
-                        self.drawSecondMap(map.grid[self.mapIndex], map, self)
+                        self.removeCollectedItems(map, map.sushiCoordonates)
+                        map.sushi.drawSprite(self.tileX, self.tileY + 15)
+                        if (map.sushiCoordonates.length < map.remainedSushi) {
+                            map.sushiCoordonates.push({ x: self.tileX, y: self.tileY, index: self.mapIndex })
+                        }
                         break
 
                     case 3:
-                        self.drawThirdMap(map.grid[self.mapIndex], map, self)
+                        map.flag.drawSprite(self.tileX - 20, self.tileY)
+                        map.flagCoordonates.x = self.tileX
+                        map.flagCoordonates.y = self.tileY
+                        break
+
+                    case 4:
+                        map.box.drawSprite(self.tileX, self.tileY)
+                        map.boxCoordonates.push({ x: self.tileX, y: self.tileY, index: self.mapIndex })
+                        break
                 }
+
             }
         }
     }
 
-    drawFirstMap(tile, map, self) {
-        switch (tile) {
-            case 0:
-                this.makeSkyTile(self, map)
-
-                if (Math.floor(Math.random() < 0.05)) {
-                    map.cloud.drawSprite(self.tileX, self.tileY)
-                }
-                break
-
-            case 1:
-                map.grass.drawSprite(self.tileX, self.tileY)
-                break
-
-            case 3:
-                this.makeSkyTile(self, map)
-                map.flag.drawSprite(self.tileX - 20, self.tileY)
-                map.flagCoordonates.x = self.tileX
-                map.flagCoordonates.y = self.tileY
-                break
-        }
-    }
-
-    drawSecondMap(tile, map, self) {
-        switch (tile) {
-            case 0:
-                self.makeSkyTile(self, map)
-                break
-
-            case 1:
-                map.grass.drawSprite(self.tileX, self.tileY)
-                break
-
-            case 2:
-                self.makeSkyTile(self, map)
-                self.removeCollectedItems(map, map.sushiCoordonates)
-                map.sushi.drawSprite(self.tileX, self.tileY + 15)
-                if (map.sushiCoordonates.length < map.remainedSushi) {
-                    map.sushiCoordonates.push({ x: self.tileX, y: self.tileY, index: self.mapIndex })
-                }
-                break
-
-            case 3:
-                self.makeSkyTile(self, map)
-                map.flag.drawSprite(self.tileX - 20, self.tileY)
-                map.flagCoordonates.x = self.tileX
-                map.flagCoordonates.y = self.tileY
-
-                break
-        }
-    }
-
-    drawThirdMap(tile, map, self) {
-        switch (tile) {
-            case 0:
-                self.makeSkyTile(self, map)
-                break
-            case 1:
-                map.grass.drawSprite(self.tileX, self.tileY)
-                break
-            case 2:
-                self.makeSkyTile(self, map)
-                self.removeCollectedItems(map, map.sushiCoordonates)
-                map.sushi.drawSprite(self.tileX, self.tileY + 15)
-                if (map.sushiCoordonates.length !== map.remainedSushi) {
-                    map.sushiCoordonates.push({ x: self.tileX, y: self.tileY, index: self.mapIndex })
-                }
-                break
-            case 3:
-                self.makeSkyTile(self, map)
-                map.flag.drawSprite(self.tileX - 20, self.tileY)
-                map.flagCoordonates.x = self.tileX
-                map.flagCoordonates.y = self.tileY
-                break
-            case 4:
-                map.box.drawSprite(self.tileX, self.tileY)
-                map.boxCoordonates.push({ x: self.tileX, y: self.tileY, index: self.mapIndex })
-                break
-        }
-
-    }
 
     makeSkyTile(self, map) {
         self.context.fillStyle = map.skyColor
@@ -161,6 +103,7 @@ export class Map {
     }
 
     removeCollectedItems(map, coordonates, i = 0) {
+        //fileter
         if (i === coordonates.length || coordonates.length === 0) {
             return
         }

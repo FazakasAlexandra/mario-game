@@ -69,7 +69,7 @@ export class Register {
         return Object.keys(this.icons).reduce((acc, key) => {
             return `${acc}<div class="character-option">
                     <img src="${this.icons[key]}" class="shadow shadow-hover"/>
-                    <input data-width="80" data-height="80" type="radio" name="character" value=${this.spriteSheets[key]}/>
+                    <input data-width="80" data-height="80" type="radio" name="character" value="${this.spriteSheets[key]}"/>
                     </div>`
         }, '')
         

@@ -8,7 +8,7 @@
     padding-bottom: 3rem;
     padding-bottom: 3rem;
     margin: auto;
-    margin-top: 1.5rem;
+    margin-top: 0.5rem;
 
 }
 
@@ -17,6 +17,7 @@
 border: none;
 margin-bottom: 1rem;
 }
+
 canvas {
     display: none;
 }
@@ -52,6 +53,11 @@ canvas {
 #icons-container {
     display: flex;
     justify-content: space-between;
+}
+
+#icons-container .character-option, 
+#icons-container input{
+    cursor: pointer;
 }
 
 input {

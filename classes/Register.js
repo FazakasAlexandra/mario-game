@@ -11,14 +11,14 @@ export class Register {
 
         this.icons = {
             redGirl : '../assets/icons/red-girl.png',
-            alexandra : '../assets/icons/alexandra.png',
+            angryGirl : '../assets/icons/angry-girl.png',
             mario : '../assets/icons/mario.png',
             charles : '../assets/icons/charles.png'
         }
 
         this.spriteSheets = {
             redGirl : '../assets/characters/red-girl.png',
-            alexandra : '../assets/characters/alexandra.png',
+            angryGirl : '../assets/characters/angry-girl.png',
             mario : '../assets/characters/mario.png',
             charles : '../assets/characters/charles.png'
         }
@@ -41,7 +41,7 @@ export class Register {
 
         registerContainer.classList.add('border','border-primary','shadow')
         document.body.appendChild(registerContainer)
-        registerContainer.innerHTML = `<img src="../assets/logo.png" id="logo"/>
+        registerContainer.innerHTML = `<img src="../assets/logo/logo2.png" id="logo"/>
                           
                                        <div id='icons-container'>
                                        ${this.getOptions()}

@@ -1,7 +1,7 @@
-import { Mario } from './classes/Mario.js'
+import { Player } from './classes/Player.js'
 import { Map } from './classes/Map.js'
 
-let canvas, context, mario, map
+let canvas, context, player, map
 
 export default function play(player) {
     canvas = document.getElementById('map')
@@ -15,7 +15,7 @@ export default function play(player) {
         spriteSheet.src = player.spriteSheet
         map = new Map(context)
         console.log(map)
-        mario = new Mario(canvas,
+        player = new Player(canvas,
             context,
             map.firstMap,
             spriteSheet,
@@ -37,7 +37,7 @@ export default function play(player) {
             // level
             player)
 
-        document.getElementById('sushiNumbers').innerText = mario.sushi
+        document.getElementById('sushiNumbers').innerText = player.sushi
         document.querySelector('#game-info').style.display = 'flex'
 
         loop()
@@ -48,10 +48,10 @@ export default function play(player) {
     function renderMap() {
         setInterval(() => {
              map.mapModels.forEach((model, i) => {
-                if (model.level === mario.level) {
+                if (model.level === player.level) {
                     console.log(model)
                     map.currentMap = map.mapModels[i]
-                    mario.currentMap = map.currentMap
+                    player.currentMap = map.currentMap
                     map.drawMap(map.currentMap)
                 }
             }) 
@@ -67,37 +67,37 @@ export default function play(player) {
     }
 
     function draw() {
-        mario.drawAnimated(mario.context, mario.currentFrameSet)
+        player.drawAnimated(player.context, player.currentFrameSet)
     }
 
     function update() {
-        mario.update()
+        player.update()
     }
 
-    //mario movement
+    //player movement
     window.addEventListener('keyup', (e) => {
         e.preventDefault()
-        mario.isTouchingFlag()
+        player.isTouchingFlag()
 
-        if (mario.level === 2 || mario.level === 3) {
-            mario.isTouchingSushi()
+        if (player.level === 2 || player.level === 3) {
+            player.isTouchingSushi()
         }
 
-        if (mario.level === 3) {
-            mario.isTouchingBox()
+        if (player.level === 3) {
+            player.isTouchingBox()
         }
 
         switch (e.keyCode) {
             case 39:
-                mario.makeSteps('right', map, map.drawMap)
+                player.makeSteps('right', map, map.drawMap)
                 break
 
             case 37:
-                mario.makeSteps('left', map, map.drawMap)
+                player.makeSteps('left', map, map.drawMap)
                 break
 
             case 32:
-                mario.jump(map, map.drawMap)
+                player.jump(map, map.drawMap)
                 break
         }
 
@@ -106,7 +106,7 @@ export default function play(player) {
      //blocks default horizontal scrolling by left/right arrow keys
     window.addEventListener("keydown", function (e) {
         // space and arrow keys
-        if ([32].indexOf(e.keyCode) > -1) {
+        if ([32,37,39].indexOf(e.keyCode) > -1) {
             e.preventDefault();
         }
     }, false); 

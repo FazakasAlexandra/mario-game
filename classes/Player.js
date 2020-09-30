@@ -1,7 +1,7 @@
 import { Animation } from './Animation.js'
 import { Database } from './Database.js'
 
-export class Mario extends Animation {
+export class Player extends Animation {
     constructor(canvas, context, currentMap, spritesheet, x, y, width, height, timePerFrame, numberOfFrames, w, h, player) {
         super(spritesheet, x, y, width, height, timePerFrame)
         this.name = player.Name
@@ -34,8 +34,8 @@ export class Mario extends Animation {
         this.onTopOfBox = false
         this.boxMaxY = 75
         this.grassMaxY = this.canvas.height / 2
-        this.marioMinY = this.grassMaxY
-        this.marioMaxY = 20
+        this.playerMinY = this.grassMaxY
+        this.playerMaxY = 20
         this.stepSound = document.querySelector('.stepSound')
     }
 
@@ -122,7 +122,7 @@ export class Mario extends Animation {
     fallFromBox(mapObject, drawMap) {
         this.onTopOfBox = false
         this.touchedBox = null
-        this.marioMinY = this.grassMaxY
+        this.playerMinY = this.grassMaxY
         this.movementRestriction.left = false
         this.movementRestriction.right = false
         this.fall(mapObject, drawMap)
@@ -132,7 +132,7 @@ export class Mario extends Animation {
         if (!this.isJummping) {
             this.isJummping = true
             let jumpInterval = setInterval(() => {
-                if (this.y < this.marioMaxY) {
+                if (this.y < this.playerMaxY) {
                     this.fall(mapObject, drawMap)
                     clearInterval(jumpInterval)
                 }
@@ -167,7 +167,7 @@ export class Mario extends Animation {
     isfallingOnBox() {
         // falls on box or not
         if (this.isTouchingBox()) {
-            this.marioMinY = this.boxMaxY
+            this.playerMinY = this.boxMaxY
         }
     }
 
@@ -178,8 +178,8 @@ export class Mario extends Animation {
         let fallInterval = setInterval(() => {
             if (this.level === 3) this.isfallingOnBox()
 
-            if (this.y === this.marioMinY) {
-                if(this.marioMinY === this.boxMaxY){
+            if (this.y === this.playerMinY) {
+                if(this.playerMinY === this.boxMaxY){
                     this.onTopOfBox = true
                 }
                 console.log('clear')
@@ -190,7 +190,7 @@ export class Mario extends Animation {
 
             drawMap(this.currentMap, mapObject)
 
-            if (this.y < this.marioMinY) this.y = this.y + 10
+            if (this.y < this.playerMinY) this.y = this.y + 10
 
         }, 50)
     }

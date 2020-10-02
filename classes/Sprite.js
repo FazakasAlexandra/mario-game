@@ -19,4 +19,15 @@ export class Sprite{
     drawSprite(x,y){
         this.context.drawImage(this.image, x, y, this.w, this.h)
     }
+
+    drawSpriteOnImageLoad = (x, y) => {
+        let image = new Image()
+        image.src = this.imagePath
+        
+        image.onload = () =>{
+            this.image = image;
+            this.drawSprite(x, y)
+        }
+        
+    }
 }

@@ -1,9 +1,12 @@
 import { Player } from './classes/Player.js'
 import { Map } from './classes/Map.js'
+import { MapGenerator } from './classes/MapGenerator.js'
+import { MapGeneratorMenu } from  './classes/MapGeneratorMenu.js'
 
-let canvas, context, player, map
+let canvas, context, map
+const game = {}
 
-export default function play(player) {
+game.play = function(player) {
     canvas = document.getElementById('map')
     context = canvas.getContext('2d')
 
@@ -13,8 +16,9 @@ export default function play(player) {
 
         const spriteSheet = new Image()
         spriteSheet.src = player.spriteSheet
+        
         map = new Map(context)
-        console.log(map)
+
         player = new Player(canvas,
             context,
             map.firstMap,
@@ -111,3 +115,19 @@ export default function play(player) {
         }
     }, false); 
 }
+
+game.createOwnMap = function(){
+    canvas = document.getElementById('map')
+    context = canvas.getContext('2d')
+ 
+    const mapGenerator = new MapGenerator(context)
+    mapGenerator.drawBaseMap()
+
+    const mapGeneratorMenu = new MapGeneratorMenu()
+    mapGeneratorMenu.setMenu()
+
+    mapGenerator.renderCreateMapButton()
+}
+
+
+export default game

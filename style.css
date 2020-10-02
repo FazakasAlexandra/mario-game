@@ -81,3 +81,37 @@ button {
 .character-option input {
     width: 1.2rem;
 }
+
+#map-generator-menu{
+    width: 1200px;
+    height: 100px;
+    border-style: solid;
+    border-width: thin;
+    display: flex;
+    justify-content: space-around;
+    background-color: #dfdfe58c;
+    align-items: center;
+}
+
+.map-menu-items{
+    max-width: 54px;
+    max-height: 54px;
+    padding: 0.5rem;
+    border: none;
+    cursor: pointer;
+}
+
+.map-menu-items.selected{
+    border-style: solid;
+    border-color:#7FBFFF;
+    border-width: 4px;
+}
+
+#create-map-button{
+    margin: auto;
+    width: fit-content;
+    color: #0071DE;
+    border-style: solid;
+    border-width: thick;
+    box-shadow: none;
+}

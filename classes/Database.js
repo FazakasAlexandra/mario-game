@@ -77,6 +77,7 @@ export class Database {
         fetch('http://localhost/game/sushigo/maps/get_maps.php')
           .then(response => response.json())
           .then(data => {
+              console.log(data)
             cb(data, mapContext)
           })
       }
@@ -87,5 +88,10 @@ export class Database {
         .then(data => {
           cb(data)
         })
+      }
+
+      getMapObjects(){
+          return fetch('http://localhost/game/sushigo/maps/get_mapObjects.php')
+          .then(res => res.json())
       }
 }

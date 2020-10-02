@@ -1,5 +1,5 @@
 import { Database } from './Database.js'
-import play from '../game.js'
+import game from '../game.js'
 
 export class Register {
     constructor() {
@@ -24,15 +24,11 @@ export class Register {
         }
     }
 
-    getIcon(){
-
-    }
-
     startGame(player) {
         document.querySelector('#register-container').remove()
         document.querySelector('#map').style.display = 'block'
 
-        play(player)
+        game.play(player)
     }
 
     createRegisterContainer() {

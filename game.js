@@ -1,12 +1,12 @@
 import { Player } from './classes/Player.js'
 import { Map } from './classes/Map.js'
 import { MapGenerator } from './classes/MapGenerator.js'
-import { MapGeneratorMenu } from  './classes/MapGeneratorMenu.js'
+import { MapGeneratorMenu } from './classes/MapGeneratorMenu.js'
 
 let canvas, context, map
 const game = {}
 
-game.play = function(player) {
+game.play = function (player, gameType, playersMap) {
     canvas = document.getElementById('map')
     context = canvas.getContext('2d')
 
@@ -16,7 +16,7 @@ game.play = function(player) {
 
         const spriteSheet = new Image()
         spriteSheet.src = player.spriteSheet
-        
+
         map = new Map(context)
 
         player = new Player(canvas,
@@ -47,25 +47,32 @@ game.play = function(player) {
         loop()
     }
 
-    renderMap()
+    renderMap(gameType)
 
     function renderMap() {
         setInterval(() => {
-             map.mapModels.forEach((model, i) => {
-                if (model.level === player.level) {
-                    console.log(model)
-                    map.currentMap = map.mapModels[i]
-                    player.currentMap = map.currentMap
-                    map.drawMap(map.currentMap)
-                }
-            }) 
+            if (gameType === 'level up') {
+                map.mapModels.forEach((model, i) => {
+                    if (model.level === player.level) {
+                        map.currentMap = map.mapModels[i]
+                        player.currentMap = map.currentMap
+                        map.drawMap(map.currentMap)
+                    }
+                })
+            }
+
+
+            if(gameType === 'use map'){
+                map.currentMap = playersMap
+                player.currentMap = playersMap
+                map.drawMap(playersMap)
+            }
 
         }, 1000)
     }
 
     function loop() {
         update()
-        //context.clearRect(0, 0, canvas.width, canvas.height)
         draw()
         requestAnimationFrame(loop)
     }
@@ -83,7 +90,7 @@ game.play = function(player) {
         e.preventDefault()
         player.isTouchingFlag()
 
-        if (player.level === 2 || player.level === 3) {
+        if (player.level !== 1) {
             player.isTouchingSushi()
         }
 
@@ -107,27 +114,26 @@ game.play = function(player) {
 
     })
 
-     //blocks default horizontal scrolling by left/right arrow keys
+    //blocks default horizontal scrolling by left/right arrow keys
     window.addEventListener("keydown", function (e) {
         // space and arrow keys
-        if ([32,37,39].indexOf(e.keyCode) > -1) {
+        if ([32, 37, 39].indexOf(e.keyCode) > -1) {
             e.preventDefault();
         }
-    }, false); 
+    }, false);
 }
 
-game.createOwnMap = function(){
+game.createOwnMap = function (player) {
     canvas = document.getElementById('map')
     context = canvas.getContext('2d')
- 
-    const mapGenerator = new MapGenerator(context)
+
+    const mapGenerator = new MapGenerator(context, player)
     mapGenerator.drawBaseMap()
 
-    const mapGeneratorMenu = new MapGeneratorMenu()
+    const mapGeneratorMenu = new MapGeneratorMenu(context, player)
     mapGeneratorMenu.setMenu()
 
     mapGenerator.renderCreateMapButton()
 }
-
 
 export default game

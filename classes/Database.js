@@ -18,18 +18,18 @@ export class Database {
         xhttp.send();
     }
 
-    getPlayer(name, cb){
+    getPlayer(name, modalContext, cb) {
         let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
+        xhttp.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
-              console.log(this.responseText)
-              cb(JSON.parse(this.responseText))
+                console.log(this.responseText)
+                cb(JSON.parse(this.responseText), modalContext)
             }
-          };
-        
+        };
+
         xhttp.open("GET", `${this.baseURL}/get_player.php?Name=${name}`, true);
         xhttp.send();
-      }
+    }
 
     postPlayer(playerObject, cb) {
         console.log(playerObject)
@@ -50,10 +50,10 @@ export class Database {
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
-               document.querySelector('#update-info').innerHTML = this.response
-               setTimeout(()=>{
-                document.querySelector('#update-info').innerHTML = ''
-               }, 1000)
+                document.querySelector('#update-info').innerHTML = this.response
+                setTimeout(() => {
+                    document.querySelector('#update-info').innerHTML = ''
+                }, 1000)
             }
         }
 
@@ -75,23 +75,70 @@ export class Database {
 
     getMaps(cb, mapContext) {
         fetch('http://localhost/game/sushigo/maps/get_maps.php')
-          .then(response => response.json())
-          .then(data => {
-              console.log(data)
-            cb(data, mapContext)
-          })
-      }
-      
-      getMap(cb, level){
-        fetch(`http://localhost/game/sushigo/maps/get_maps?${level}=1.php`)
-        .then(response => response.json())
-        .then(data => {
-          cb(data)
-        })
-      }
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(el => {
+                    el.json_map = JSON.parse(el.json_map)
+                });
+                cb(data, mapContext)
+            })
+    }
 
-      getMapObjects(){
-          return fetch('http://localhost/game/sushigo/maps/get_mapObjects.php')
-          .then(res => res.json())
-      }
+    getMap(cb, level) {
+        fetch(`http://localhost/game/sushigo/maps/get_maps?level=${level}.php`)
+            .then(response => response.json())
+            .then(data => {
+                cb(data)
+            })
+    }
+
+    getPlayerMaps(playerId) {
+        return fetch(`http://localhost/game/sushigo/maps/get_maps?player=${playerId}.php`)
+            .then(response => response.json())
+    }
+
+    postMap(map) {
+        return fetch(`http://localhost/game/sushigo/maps/post_map`, {
+            method: 'POST',
+            body: JSON.stringify(map),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then((res) => {
+                return res.json()
+            })
+    }
+
+    getMapsByPlayerId(playerId) {
+        return fetch(`http://localhost/game/sushigo/maps/get_maps.php?player_id=${playerId}`)
+            .then(res => res.json())
+            .then((maps) => {
+                maps.forEach(el => {
+                    el.json_map = JSON.parse(el.json_map)
+                })
+
+                return maps
+            })
+    }
+
+    getMapByMapId(mapId) {
+        return fetch(`http://localhost/game/sushigo/maps/get_maps.php?map_id=${mapId}`)
+            .then(res => res.json())
+            .then(map => {
+                map.json_map = JSON.parse(map.json_map)
+
+                const coordinates = {
+                    boxCoordinates: [],
+                    sushiCoordinates: [],
+                    flagCoordinates: {
+                        x: null,
+                        y: null
+                    }
+                }
+
+                return {...map, ...coordinates}
+            })
+    }
+
 }

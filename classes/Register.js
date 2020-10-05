@@ -1,8 +1,9 @@
 import { Database } from './Database.js'
-import game from '../game.js'
+import { GameMenu } from './GameMenu.js'
 
 export class Register {
     constructor() {
+        this.gameMenu = new GameMenu()
         this.database = new Database()
         this.newPlayer = {
             Sushi: 0,
@@ -24,13 +25,6 @@ export class Register {
         }
     }
 
-    startGame(player) {
-        document.querySelector('#register-container').remove()
-        document.querySelector('#map').style.display = 'block'
-
-        game.play(player)
-    }
-
     createRegisterContainer() {
         const registerContainer = document.createElement('div')
         registerContainer.id = 'register-container'
@@ -44,15 +38,15 @@ export class Register {
                                        </div>
 
                                        <div id = create-container>
-                                       <input type=text placeholder="name"/>
+                                       <input id="create-player-name-input" type=text placeholder="name"/>
                                        <button id='create'>Create</button>
                                        </div>
 
                                        <h4>already have a character?</h4>
                                        
                                        <div id = play-container>
-                                       <input type=text placeholder="name"/>
-                                       <button id='play'>PLAY</button>
+                                         <input id="player-name-input" type=text placeholder="name"/>
+                                         ${this.gameMenu.gameModalButton('play', 'PLAY')}
                                        </div>`
         this.addCreateButtonEvent()
         this.addPlayButtonEvent()
@@ -74,7 +68,7 @@ export class Register {
 
     addCreateButtonEvent() {
         document.querySelector('#create').addEventListener('click', (e) => {
-            this.newPlayer.Name = e.target.previousElementSibling.value
+            this.newPlayer.Name = document.querySelector('#create-player-name-input').value
             
             let inputs = document.querySelector('#icons-container').querySelectorAll('input')
             inputs.forEach((input)=>{
@@ -85,14 +79,14 @@ export class Register {
                 }
             })
 
-            this.database.postPlayer(this.newPlayer, this.startGame)
+            this.database.postPlayer(this.newPlayer, 'register', this.gameMenu.setModalBody)
         })
     }
 
     addPlayButtonEvent() {
-        document.querySelector('#play').addEventListener('click', (e) => {
-            const name = e.target.previousElementSibling.value
-            this.database.getPlayer(name, this.startGame)
+        document.querySelector('#play').addEventListener('click', () => {
+            const name = document.querySelector('#player-name-input').value
+            this.database.getPlayer(name, 'register', this.gameMenu.setModalBody)
         })
     }
 

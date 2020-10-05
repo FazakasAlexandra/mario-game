@@ -54,6 +54,7 @@ export class Player extends Animation {
     }
 
     isTouchingSushi() {
+        console.log(this.currentMap, this.currentMap.sushiCoordinates)
         this.currentMap.sushiCoordinates.forEach(sushi => {
             if (this.checkCollision(sushi, 30, 30)) {
                 sushi.collected = true

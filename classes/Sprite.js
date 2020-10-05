@@ -11,12 +11,11 @@ export class Sprite{
         let image = new Image()
         image.src = this.imagePath
         image.onload = function (e) {
-            console.log(image.src);
         }
         return image
     }
 
-    drawSprite(x,y){
+    drawSprite = (x,y) => {
         this.context.drawImage(this.image, x, y, this.w, this.h)
     }
 

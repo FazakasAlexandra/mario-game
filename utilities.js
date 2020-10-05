@@ -13,8 +13,12 @@ export function i2xy(index, mapWidth) {
     return [x,y]
 }
 
-// converts map coordinates to tile index coordinates
+// converts tile coordinates to index 
 export function xy2i(x, y, mapWidth) {
     let index = y * mapWidth + x
     return index
+}
+
+export function defaultHTML(){ 
+
 }

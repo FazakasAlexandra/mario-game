@@ -1,10 +1,8 @@
 import { Database } from './Database.js'
-import { MapGenerator } from './MapGenerator.js'
 
 export class MapGeneratorMenu {
-    constructor(context, player) {
-        this.context = context
-        this.player = player
+    constructor(mapGenerator) {
+        this.mapGenerator = mapGenerator
         this.db = new Database()
         this.menu;
         this.skyColors = [
@@ -17,6 +15,8 @@ export class MapGeneratorMenu {
             { fileName : 'grass3.png', gridValue : 1 },
             { fileName : 'grass4.jpg', gridValue : 1 },
             { fileName : 'grass5.png', gridValue : 1 },
+            { fileName : 'flower.png', gridValue : 1 },
+            { fileName : 'cloud.png', gridValue : 1 },
             { fileName : 'sushi.png', gridValue : 2 },
             { fileName : 'sushi_2.png', gridValue : 2 },
             { fileName : 'flag.png', gridValue : 3 },
@@ -24,7 +24,6 @@ export class MapGeneratorMenu {
             { fileName : 'box.png', gridValue : 4 },
             { fileName : 'box_2.png', gridValue : 4 },
             { fileName : 'brick.png', gridValue : 4 },
-            { fileName : 'cloud.png', gridValue : 1 },
         ]
     }
 
@@ -79,13 +78,9 @@ export class MapGeneratorMenu {
     addSkyColorOptionsEvent(){
         this.menu.querySelectorAll('.color-options').forEach(color => {
             color.addEventListener('click',(e)=>{
-                console.log(this.context, this.player)
-                const mapGenerator = new MapGenerator(
-                                         this.context, 
-                                         this.player, 
-                                         e.target.getAttribute('color'),
-                                         JSON.parse(localStorage.getItem('map')))
-                mapGenerator.drawBaseMap()
+                this.mapGenerator.skyColor = e.target.getAttribute('color')
+                this.mapGenerator.drawBaseMap()
+                
             })
         })
     }

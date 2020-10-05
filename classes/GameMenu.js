@@ -4,8 +4,8 @@ import { defaultHTML } from '../utilities.js'
 export class GameMenu {
     constructor(createdMap, allPlayersMap) {
         this.player
-        this.createdMap = createdMap, 
-        this.allPlayersMap = allPlayersMap
+        this.createdMap = createdMap,
+            this.allPlayersMap = allPlayersMap
     }
 
     gameModalButton(bttnId, bttnContent) {
@@ -20,7 +20,7 @@ export class GameMenu {
     </div>`
     }
 
-    setModalBody = (player, modalContext ) => {
+    setModalBody = (player, modalContext) => {
         this.player = player
 
         document.querySelector('.modal').innerHTML += this.getModalBodyContent(modalContext)
@@ -62,7 +62,7 @@ export class GameMenu {
         }
     }
 
-    addMapGeneratorContextEvents(){
+    addMapGeneratorContextEvents() {
         document.querySelector('#use-map-option').addEventListener('click', () => {
             console.log('time to use new map')
             this.removeMapGeneratorPage()
@@ -107,8 +107,8 @@ export class GameMenu {
         }
     }
 
-    removeMapGeneratorPage(){
+    removeMapGeneratorPage() {
         document.querySelector('#map-generator-menu').remove()
-        document.querySelector('#modal-container').remove() 
+        document.querySelector('#modal-container').remove()
     }
 }

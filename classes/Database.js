@@ -31,19 +31,16 @@ export class Database {
         xhttp.send();
     }
 
-    postPlayer(playerObject, cb) {
-        console.log(playerObject)
-        const JSONplayer = JSON.stringify(playerObject)
-        let xhttp = new XMLHttpRequest()
-        xhttp.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) {
-                console.log(this.response)
-                cb(playerObject)
+    postPlayer(playerObject) {
+        return fetch(`${this.baseURL}/post_player.php`, {
+            method: 'POST',
+            body: JSON.stringify(playerObject),
+            headers: {
+                'Content-Type': 'application/json'
             }
-        }
-        xhttp.open('POST', `${this.baseURL}/post_player.php`)
-        xhttp.setRequestHeader('Content-Type', 'application/json')
-        xhttp.send(JSONplayer)
+        })
+            .then(res => res.json())
+
     }
 
     upadatePlayerSushi(name, sushiNumber) {
@@ -105,9 +102,7 @@ export class Database {
                 'Content-Type': 'application/json'
             }
         })
-            .then((res) => {
-                return res.json()
-            })
+            .then(res => res.json())
     }
 
     getMapsByPlayerId(playerId) {
@@ -137,7 +132,7 @@ export class Database {
                     }
                 }
 
-                return {...map, ...coordinates}
+                return { ...map, ...coordinates }
             })
     }
 

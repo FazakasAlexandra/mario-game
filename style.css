@@ -13,8 +13,12 @@ body {
     padding-bottom: 3rem;
     padding-bottom: 3rem;
     margin: auto;
-    margin-top: 0.5rem;
+    margin-top: 3%;
 
+}
+#register-container h4{
+    margin: 0rem;
+    margin-bottom: 1rem;
 }
 
 
@@ -131,7 +135,7 @@ button {
 
 #color-options-container{
     padding-right: 1rem;
-    padding-left: 2.5rem;
+    padding-left: 2rem;
     border-left-style: solid;
     border-width: thin;
 }

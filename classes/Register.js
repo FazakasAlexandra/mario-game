@@ -39,7 +39,7 @@ export class Register {
 
                                        <div id = create-container>
                                        <input id="create-player-name-input" type=text placeholder="name"/>
-                                       <button id='create'>Create</button>
+                                       ${this.gameMenu.gameModalButton('create', 'CREATE')}
                                        </div>
 
                                        <h4>already have a character?</h4>
@@ -67,7 +67,7 @@ export class Register {
 
 
     addCreateButtonEvent() {
-        document.querySelector('#create').addEventListener('click', (e) => {
+        document.querySelector('#create').addEventListener('click', () => {
             this.newPlayer.Name = document.querySelector('#create-player-name-input').value
             
             let inputs = document.querySelector('#icons-container').querySelectorAll('input')
@@ -79,7 +79,11 @@ export class Register {
                 }
             })
 
-            this.database.postPlayer(this.newPlayer, 'register', this.gameMenu.setModalBody)
+            this.database.postPlayer(this.newPlayer)
+            .then((message)=>{
+                this.newPlayer.Id = message.player_id
+                this.gameMenu.setModalBody(this.newPlayer, 'register')
+            })
         })
     }
 

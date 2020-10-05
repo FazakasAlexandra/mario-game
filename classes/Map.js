@@ -7,7 +7,6 @@ export class Map {
         this.database = new Database()
         this.database.getMaps(this.makeMapModels, this)
         this.mapModels = []
-        this.currentMap = this.mapModels.firstMap
         this.mapIndex = 0
         this.w = 50
         this.h = 50
@@ -24,6 +23,7 @@ export class Map {
                 boxCoordinates: [],
                 sushiCoordinates: [],
                 remainedSushi: map.remainedSushi,
+                obstacles: map.obstacles,
                 flagCoordinates: {
                     x: null,
                     y: null
@@ -41,8 +41,6 @@ export class Map {
                 self.tileYstart = y * self.h
 
                 self.makeSkyTile(self, map)
-
-                console.log(typeof(map.json_map[self.mapIndex].gridValue))
 
                 switch (+map.json_map[self.mapIndex].gridValue) {
                     case 1:
@@ -69,7 +67,9 @@ export class Map {
                         break
 
                     case 4:
+                        console.log('object 4')
                         self.drawSprite(self, map, self.tileXstart, self.tileYstart)
+                        if(map.boxCoordinates.length < map.obstacles)
                         map.boxCoordinates.push({ x: self.tileXstart, y: self.tileYstart, index: self.mapIndex })
                         
                         break
@@ -80,14 +80,13 @@ export class Map {
     }
 
     drawSprite(self, map, tileXstart, tileYstart, w, h) {
-        console.log(map.json_map[self.mapIndex].img)
         const sprite = new Sprite(map.json_map[self.mapIndex].img, self.context, w, h)
         sprite.drawSprite(tileXstart, tileYstart)
     }
 
 
     makeSkyTile(self, map) {
-        console.log(map.skyColor)
+        console.warn(map.skyColor)
         self.context.fillStyle = map.skyColor
         self.context.fillRect(self.tileXstart, self.tileYstart, 50, 50);
     }

@@ -3,30 +3,27 @@ import { Map } from './classes/Map.js'
 import { MapGenerator } from './classes/MapGenerator.js'
 import { MapGeneratorMenu } from './classes/MapGeneratorMenu.js'
 
-let canvas, context, map
-const game = {}
+const game = {
+    canvas : document.getElementById('map'), 
+    context : document.getElementById('map').getContext('2d')
+}
 
 game.play = function (player, gameType, playersMap) {
-    canvas = document.getElementById('map')
-    context = canvas.getContext('2d')
+    game.map = new Map(game.context)
 
     start()
-    function start() {
-        console.log('first loaded')
 
+    function start() {
         const spriteSheet = new Image()
         spriteSheet.src = player.spriteSheet
 
-        map = new Map(context)
-
-        player = new Player(canvas,
-            context,
-            map.firstMap,
+        player = new Player(game.canvas,
+            game.context,
             spriteSheet,
             // x coordinate 
             0,
             // y coordinate
-            canvas.height / 2,
+            game.canvas.height / 2,
             // sprite sheet width and height
             spriteSheet.width,
             spriteSheet.height,
@@ -52,20 +49,20 @@ game.play = function (player, gameType, playersMap) {
     function renderMap() {
         setInterval(() => {
             if (gameType === 'level up') {
-                map.mapModels.forEach((model, i) => {
+                game.map.mapModels.forEach((model) => {
                     if (model.level === player.level) {
-                        map.currentMap = map.mapModels[i]
-                        player.currentMap = map.currentMap
-                        map.drawMap(map.currentMap)
+                        game.map.currentMap = model
+                        player.currentMap = model
+                        game.map.drawMap(model)
                     }
                 })
             }
 
 
             if(gameType === 'use map'){
-                map.currentMap = playersMap
+                game.map.currentMap = playersMap
                 player.currentMap = playersMap
-                map.drawMap(playersMap)
+                game.map.drawMap(playersMap)
             }
 
         }, 1000)
@@ -90,25 +87,25 @@ game.play = function (player, gameType, playersMap) {
         e.preventDefault()
         player.isTouchingFlag()
 
-        if (player.level !== 1) {
+        if (game.map.currentMap.remainedSushi > 0) {
             player.isTouchingSushi()
         }
 
-        if (player.level === 3) {
+        if (game.map.currentMap.obstacles > 0) {
             player.isTouchingBox()
         }
 
         switch (e.keyCode) {
             case 39:
-                player.makeSteps('right', map, map.drawMap)
+                player.makeSteps('right', game.map, game.map.drawMap)
                 break
 
             case 37:
-                player.makeSteps('left', map, map.drawMap)
+                player.makeSteps('left', game.map, game.map.drawMap)
                 break
 
             case 32:
-                player.jump(map, map.drawMap)
+                player.jump(game.map, game.map.drawMap)
                 break
         }
 
@@ -124,13 +121,10 @@ game.play = function (player, gameType, playersMap) {
 }
 
 game.createOwnMap = function (player) {
-    canvas = document.getElementById('map')
-    context = canvas.getContext('2d')
-
-    const mapGenerator = new MapGenerator(context, player)
+    const mapGenerator = new MapGenerator(game.context, player)
     mapGenerator.drawBaseMap()
 
-    const mapGeneratorMenu = new MapGeneratorMenu(context, player)
+    const mapGeneratorMenu = new MapGeneratorMenu(mapGenerator)
     mapGeneratorMenu.setMenu()
 
     mapGenerator.renderCreateMapButton()

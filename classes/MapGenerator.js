@@ -5,19 +5,19 @@ import { xy2i } from '../utilities.js'
 
 export class MapGenerator {
     constructor(context, player, skyColor, storedMap) {
-        this.db = new Database()
-        this.gameMenu = new GameMenu()
-        this.skyColor = skyColor || '#7FBFFF'
-        this.remainedSushi = 0
         this.context = context
         this.player = player
+        this.skyColor = skyColor || '#7FBFFF'
+        this.baseMap = storedMap || []
+        this.remainedSushi = 0
+        this.obstacles = 0
         this.mapIndex = 0
         this.w = 50
         this.h = 50
         this.tileXstart = 0
         this.tileYstart = 0
-        this.baseMap = storedMap || []
-
+        this.db = new Database()
+        this.gameMenu = new GameMenu()
     }
 
     renderCreateMapButton() {
@@ -28,22 +28,25 @@ export class MapGenerator {
     }
 
     addCreateMapEvent() {
+        console.log(this, this.player.Id)
         document.querySelector('#create-map').addEventListener('click', () => {
-        this.createdMap = {
-            skyColor: this.skyColor,
-            remainedSushi: this.remainedSushi,
-            json_map: this.baseMap,
-            playerId: this.player.Id
-        }
+            console.log(this.skyColor)
+            this.createdMap = {
+                skyColor: this.skyColor,
+                remainedSushi: this.remainedSushi,
+                obstacles: this.obstacles,
+                json_map: this.baseMap,
+                playerId: this.player.Id
+            }
 
             this.db.postMap(this.createdMap)
                 .then((res) => {
                     console.log(res.map_id)
                     Promise.allSettled([this.db.getMapByMapId(res.map_id), this.db.getMapsByPlayerId(this.player.Id)])
-                    .then((res)=>{
-                        this.gameMenu = new GameMenu(res[0].value, res[1].value)
-                        this.gameMenu.setModalBody(this.player, 'mapGenerator', this.createdMap)
-                    })
+                        .then((res) => {
+                            this.gameMenu = new GameMenu(res[0].value, res[1].value)
+                            this.gameMenu.setModalBody(this.player, 'mapGenerator', this.createdMap)
+                        })
                 })
         })
     }
@@ -140,22 +143,44 @@ export class MapGenerator {
             if (document.querySelector('.selected')) {
                 this.baseMap[chosenIndex].gridValue = document.querySelector('.selected').getAttribute('grid-value')
                 this.baseMap[chosenIndex].img = document.querySelector('.selected').getAttribute('src')
-                this.isSushiAdded(chosenIndex)
+
+                this.isSushiChosen(chosenIndex, 'add')
+                this.isObstacleChosen(chosenIndex, 'add')
+
                 this.updateStoredMap(chosenIndex)
                 this.updateBaseMap(chosenIndex, true)
 
             } else {
                 this.baseMap[chosenIndex].gridValue = 0
                 this.baseMap[chosenIndex].img = ''
+
+                this.isSushiChosen(chosenIndex, 'remove')
+                this.isObstacleChosen(chosenIndex, 'remove')
+
                 this.updateStoredMap(chosenIndex)
                 this.updateBaseMap(chosenIndex, false)
             }
         })
     }
 
-    isSushiAdded(chosenIndex) {
+    isSushiChosen(chosenIndex, action) {
         if (this.baseMap[chosenIndex].gridValue === '2') {
-            this.remainedSushi += 1
+            if (action === 'add') {
+                this.remainedSushi += 1
+                return
+            }
+
+            this.remainedSushi -= 1
+        }
+    }
+
+    isObstacleChosen(chosenIndex, action) {
+        if (this.baseMap[chosenIndex].gridValue === '4') {
+            if (action === 'add') {
+                this.obstacles += 1
+                return
+            }
+            this.obstacles -= 1
         }
     }
 

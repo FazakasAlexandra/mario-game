@@ -2,20 +2,20 @@ import { Animation } from './Animation.js'
 import { Database } from './Database.js'
 
 export class Player extends Animation {
-    constructor(canvas, context, currentMap, spritesheet, x, y, width, height, timePerFrame, numberOfFrames, w, h, player) {
+    constructor(canvas, context, spritesheet, x, y, width, height, timePerFrame, numberOfFrames, w, h, player) {
         super(spritesheet, x, y, width, height, timePerFrame)
+        this.canvas = canvas
+        this.context = context
+        this.currentMap;
+        this.numberOfFrames = numberOfFrames
+        this.w = w
+        this.h = h
         this.name = player.Name
         this.level = player.Level
         this.sushi = player.Sushi
         this.database = new Database()
-        this.canvas = canvas
-        this.context = context
-        this.currentMap = currentMap
         this.drawAnimates = super.drawAnimated
         this.update = super.update
-        this.w = w
-        this.h = h
-        this.numberOfFrames = numberOfFrames
         this.frameSet = {
             stay: [0, 0, 0, 0],
             left: [4, 5, 6, 7],
@@ -54,7 +54,6 @@ export class Player extends Animation {
     }
 
     isTouchingSushi() {
-        console.log(this.currentMap, this.currentMap.sushiCoordinates)
         this.currentMap.sushiCoordinates.forEach(sushi => {
             if (this.checkCollision(sushi, 30, 30)) {
                 sushi.collected = true
@@ -177,7 +176,7 @@ export class Player extends Animation {
         this.isFalling = true
 
         let fallInterval = setInterval(() => {
-            if (this.level === 3) this.isfallingOnBox()
+            if (this.currentMap.obstacles > 0) this.isfallingOnBox()
 
             if (this.y === this.playerMinY) {
                 if(this.playerMinY === this.boxMaxY){

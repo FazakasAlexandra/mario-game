@@ -21,7 +21,7 @@ export class MapGenerator {
     }
 
 
-    // CREATE MAP BUTTON FUNCTIONALITY
+    // SAVE MAP BUTTON FUNCTIONALITY
 
 
     renderCreateMapButton() {
@@ -122,7 +122,9 @@ export class MapGenerator {
         }
     }
 
+
     // FUNCTIONS TO DRAW ON CANVAS
+
 
     makeBaseTile = () => {
         this.setBaseTileFill()
@@ -209,7 +211,7 @@ export class MapGenerator {
             if(tile.gridValue === '2'){
                 sushiCount++
             }
-            
+
         });
 
         this.remainedSushi = sushiCount
@@ -230,7 +232,7 @@ export class MapGenerator {
         this.obstacles = obstaclesNr
     }
 
-    // takes number of sushi from previous map and sets nr of obstacles on curent map
+    // takes number of sushi from previous map and sets nr of sushi on curent map
     setRemainedSushiNr(sushiNr){
         this.remainedSushi = sushiNr
     }

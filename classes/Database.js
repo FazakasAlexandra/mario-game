@@ -18,20 +18,13 @@ export class Database {
         xhttp.send();
     }
 
-    getPlayer(name, modalContext, cb) {
-        let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) {
-                console.log(this.responseText)
-                cb(JSON.parse(this.responseText), modalContext)
-            }
-        };
-
-        xhttp.open("GET", `${this.baseURL}/get_player.php?Name=${name}`, true);
-        xhttp.send();
+    getPlayer(name) {
+        return fetch(`${this.baseURL}/get_player.php?Name=${name}`)
+        .then((res)=>res.json())
     }
 
     postPlayer(playerObject) {
+        console.log(playerObject)
         return fetch(`${this.baseURL}/post_player.php`, {
             method: 'POST',
             body: JSON.stringify(playerObject),
@@ -40,6 +33,10 @@ export class Database {
             }
         })
             .then(res => res.json())
+            .then((response)=>{
+                playerObject.Id = response.player_id
+                return playerObject
+            })
 
     }
 
@@ -89,11 +86,6 @@ export class Database {
             })
     }
 
-    getPlayerMaps(playerId) {
-        return fetch(`http://localhost/game/sushigo/maps/get_maps?player=${playerId}.php`)
-            .then(response => response.json())
-    }
-
     postMap(map) {
         return fetch(`http://localhost/game/sushigo/maps/post_map`, {
             method: 'POST',
@@ -105,10 +97,11 @@ export class Database {
             .then(res => res.json())
     }
 
-    getMapsByPlayerId(playerId) {
+    getPlayerMaps(playerId) {
         return fetch(`http://localhost/game/sushigo/maps/get_maps.php?player_id=${playerId}`)
             .then(res => res.json())
             .then((maps) => {
+                
                 maps.forEach(el => {
                     el.json_map = JSON.parse(el.json_map)
                 })

@@ -1,14 +1,29 @@
 import { Player } from './classes/Player.js'
 import { Map } from './classes/Map.js'
+import { GameMenu } from './classes/GameMenu.js'
 import { MapGenerator } from './classes/MapGenerator.js'
 import { MapGeneratorMenu } from './classes/MapGeneratorMenu.js'
 
 const game = {
-    canvas : document.getElementById('map'), 
-    context : document.getElementById('map').getContext('2d')
+    canvas: document.getElementById('map'),
+    context: document.getElementById('map').getContext('2d')
+}
+
+game.stopGame = function () {
+    game.sushiInfo('', 'none')
+    clearInterval(game.intervalId);
+    cancelAnimationFrame(game.animationFrameId)
+    window.removeEventListener('keyup', game.movePlayer)
+}
+
+game.sushiInfo = function (text, displayStyle) {
+    document.getElementById('sushiNumbers').innerText = text
+    document.querySelector('#game-info').style.display = displayStyle
 }
 
 game.play = function (player, gameType, playersMap) {
+    game.setLevelUpDottedMenu(player)
+
     game.map = new Map(game.context)
 
     start()
@@ -17,7 +32,7 @@ game.play = function (player, gameType, playersMap) {
         const spriteSheet = new Image()
         spriteSheet.src = player.spriteSheet
 
-        player = new Player(game.canvas,
+        game.player = new Player(game.canvas,
             game.context,
             spriteSheet,
             // x coordinate 
@@ -38,8 +53,7 @@ game.play = function (player, gameType, playersMap) {
             // level
             player)
 
-        document.getElementById('sushiNumbers').innerText = player.sushi
-        document.querySelector('#game-info').style.display = 'flex'
+        game.sushiInfo(game.player.sushi, 'flex')
 
         loop()
     }
@@ -47,21 +61,21 @@ game.play = function (player, gameType, playersMap) {
     renderMap(gameType)
 
     function renderMap() {
-        setInterval(() => {
+        game.intervalId = setInterval(() => {
             if (gameType === 'level up') {
                 game.map.mapModels.forEach((model) => {
-                    if (model.level === player.level) {
+                    if (model.level === game.player.level) {
                         game.map.currentMap = model
-                        player.currentMap = model
+                        game.player.currentMap = model
                         game.map.drawMap(model)
                     }
                 })
             }
 
 
-            if(gameType === 'use map'){
+            if (gameType === 'use map') {
                 game.map.currentMap = playersMap
-                player.currentMap = playersMap
+                game.player.currentMap = playersMap
                 game.map.drawMap(playersMap)
             }
 
@@ -71,63 +85,93 @@ game.play = function (player, gameType, playersMap) {
     function loop() {
         update()
         draw()
-        requestAnimationFrame(loop)
+        game.animationFrameId = requestAnimationFrame(loop)
     }
 
     function draw() {
-        player.drawAnimated(player.context, player.currentFrameSet)
+        game.player.drawAnimated(game.player.context, game.player.currentFrameSet)
     }
 
     function update() {
-        player.update()
+        game.player.update()
     }
 
     //player movement
-    window.addEventListener('keyup', (e) => {
-        e.preventDefault()
-        player.isTouchingFlag()
+    window.addEventListener('keyup', game.movePlayer)
+}
 
-        if (game.map.currentMap.remainedSushi > 0) {
-            player.isTouchingSushi()
-        }
+game.movePlayer = function (e) {
+    e.preventDefault()
+    game.player.isTouchingFlag()
 
-        if (game.map.currentMap.obstacles > 0) {
-            player.isTouchingBox()
-        }
+    if (game.map.currentMap.remainedSushi > 0) {
+        console.log(game.map.currentMap)
+        game.player.isTouchingSushi()
+    }
 
-        switch (e.keyCode) {
-            case 39:
-                player.makeSteps('right', game.map, game.map.drawMap)
-                break
+    if (game.map.currentMap.obstacles > 0) {
+        game.player.isTouchingBox()
+    }
 
-            case 37:
-                player.makeSteps('left', game.map, game.map.drawMap)
-                break
+    switch (e.keyCode) {
+        case 39:
+            game.player.makeSteps('right', game.map, game.map.drawMap)
+            break
 
-            case 32:
-                player.jump(game.map, game.map.drawMap)
-                break
-        }
+        case 37:
+            game.player.makeSteps('left', game.map, game.map.drawMap)
+            break
 
-    })
+        case 32:
+            game.player.jump(game.map, game.map.drawMap)
+            break
+    }
+}
 
-    //blocks default horizontal scrolling by left/right arrow keys
-    window.addEventListener("keydown", function (e) {
-        // space and arrow keys
-        if ([32, 37, 39].indexOf(e.keyCode) > -1) {
-            e.preventDefault();
-        }
-    }, false);
+game.removeStoredMap = function () {
+    localStorage.removeItem('map')
 }
 
 game.createOwnMap = function (player) {
     const mapGenerator = new MapGenerator(game.context, player)
+    game.removeStoredMap()
     mapGenerator.drawBaseMap()
 
-    const mapGeneratorMenu = new MapGeneratorMenu(mapGenerator)
-    mapGeneratorMenu.setMenu()
+    game.setGameGeneratorMenu(mapGenerator)
+    game.setGameGeneratorDottedMenu(player)
+
 
     mapGenerator.renderCreateMapButton()
+}
+
+game.editOwnMap = function (player, skyColor, map) {
+    const mapGenerator = new MapGenerator(game.context, player, skyColor, map.json_map)
+    mapGenerator.storeMap(map.json_map)
+    mapGenerator.setObstaclesNr(map.obstacles)
+    mapGenerator.setRemainedSushiNr(map.remainedSushi)
+    mapGenerator.drawBaseMap()
+
+    game.setGameGeneratorMenu(mapGenerator)
+    game.setGameGeneratorDottedMenu(player)
+
+    mapGenerator.renderCreateMapButton()
+}
+
+game.setGameGeneratorDottedMenu = function (player) {
+    const gameMenu = new GameMenu()
+    gameMenu.setPlayer(player)
+    gameMenu.renderDottedMenuIcon('mapGenerator-menu')
+}
+
+game.setGameGeneratorMenu = function (mapGenerator) {
+    const mapGeneratorMenu = new MapGeneratorMenu(mapGenerator)
+    mapGeneratorMenu.setMenu()
+}
+
+game.setLevelUpDottedMenu = function (player) {
+    const gameMenu = new GameMenu(player)
+    gameMenu.setPlayer(player)
+    gameMenu.renderDottedMenuIcon('level-up-menu')
 }
 
 export default game

@@ -182,7 +182,6 @@ export class Player extends Animation {
                 if(this.playerMinY === this.boxMaxY){
                     this.onTopOfBox = true
                 }
-                console.log('clear')
                 this.isJummping = false
                 this.isFalling = false
                 clearInterval(fallInterval)

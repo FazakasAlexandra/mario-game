@@ -11,26 +11,32 @@ export class Register {
         }
 
         this.icons = {
-            redGirl : '../assets/icons/red-girl.png',
-            angryGirl : '../assets/icons/angry-girl.png',
-            mario : '../assets/icons/mario.png',
-            charles : '../assets/icons/charles.png'
+            redGirl: '../assets/icons/red-girl.png',
+            angryGirl: '../assets/icons/angry-girl.png',
+            mario: '../assets/icons/mario.png',
+            charles: '../assets/icons/charles.png'
         }
 
         this.spriteSheets = {
-            redGirl : '../assets/characters/red-girl.png',
-            angryGirl : '../assets/characters/angry-girl.png',
-            mario : '../assets/characters/mario.png',
-            charles : '../assets/characters/charles.png'
+            redGirl: '../assets/characters/red-girl.png',
+            angryGirl: '../assets/characters/angry-girl.png',
+            mario: '../assets/characters/mario.png',
+            charles: '../assets/characters/charles.png'
         }
     }
 
-    createRegisterContainer() {
+    getRegisterContainer(){
         const registerContainer = document.createElement('div')
         registerContainer.id = 'register-container'
+        registerContainer.classList.add('border', 'border-primary', 'shadow')
 
-        registerContainer.classList.add('border','border-primary','shadow')
+        return registerContainer
+    }
+
+    createRegisterContainer() {
+        const registerContainer = this.getRegisterContainer() 
         document.body.appendChild(registerContainer)
+        
         registerContainer.innerHTML = `<img src="../assets/logo/logo2.png" id="logo"/>
                           
                                        <div id='icons-container'>
@@ -55,49 +61,60 @@ export class Register {
         return registerContainer
     }
 
-    getOptions(){
+    getOptions() {
         return Object.keys(this.icons).reduce((acc, key) => {
             return `${acc}<div class="character-option">
                     <img src="${this.icons[key]}" class="shadow shadow-hover"/>
                     <input data-width="80" data-height="80" type="radio" name="character" value="${this.spriteSheets[key]}"/>
                     </div>`
         }, '')
-        
-    }
 
+    }
 
     addCreateButtonEvent() {
         document.querySelector('#create').addEventListener('click', () => {
-            this.newPlayer.Name = document.querySelector('#create-player-name-input').value
-            
-            let inputs = document.querySelector('#icons-container').querySelectorAll('input')
-            inputs.forEach((input)=>{
-                if(input.checked){
-                    this.newPlayer.spriteSheet = input.value
-                    this.newPlayer.width = +input.getAttribute('data-width')
-                    this.newPlayer.height = +input.getAttribute('data-height')
-                }
-            })
-
-            this.database.postPlayer(this.newPlayer)
-            .then((message)=>{
-                this.newPlayer.Id = message.player_id
-                this.gameMenu.setModalBody(this.newPlayer, 'register')
-            })
+            this.setNewPlayerObject()
+            this.postNewPlayer()
         })
+    }
+
+    setNewPlayerObject() {
+        this.newPlayer.Name = document.querySelector('#create-player-name-input').value
+        
+        document.querySelector('#icons-container').querySelectorAll('input').forEach((input) => {
+            if (input.checked) {
+                this.newPlayer.spriteSheet = input.value
+                this.newPlayer.width = +input.getAttribute('data-width')
+                this.newPlayer.height = +input.getAttribute('data-height')
+            }
+        })
+    }
+
+    postNewPlayer() {
+
+        this.database.postPlayer(this.newPlayer)
+            .then((player) => {
+                this.gameMenu.setPlayer(player)
+                this.gameMenu.setGameMenuContext('register')
+                this.gameMenu.setModalBody(true)
+            })
     }
 
     addPlayButtonEvent() {
         document.querySelector('#play').addEventListener('click', () => {
-            const name = document.querySelector('#player-name-input').value
-            this.database.getPlayer(name, 'register', this.gameMenu.setModalBody)
+            this.database.getPlayer(document.querySelector('#player-name-input').value)
+                .then((player) => {
+                    this.gameMenu.setPlayer(player)
+                    this.gameMenu.setGameMenuContext('register')
+                    this.gameMenu.setModalBody()
+                })
         })
     }
 
-    addImageClickEvent(){
+    addImageClickEvent() {
         let images = document.querySelector('#icons-container').querySelectorAll('img')
         images.forEach(img => {
-            img.addEventListener('click', (e)=>{
+            img.addEventListener('click', (e) => {
                 e.target.nextElementSibling.checked = true
             })
         })

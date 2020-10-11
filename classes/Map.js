@@ -54,6 +54,7 @@ export class Map {
                         self.drawSprite(self, map, self.tileXstart, self.tileYstart + 15, 30, 30)
 
                         if (map.sushiCoordinates.length < map.remainedSushi) {
+                            console.log(map.remainedSushi)
                             map.sushiCoordinates.push({ x: self.tileXstart, y: self.tileYstart, index: self.mapIndex })
                         }
 
@@ -67,7 +68,6 @@ export class Map {
                         break
 
                     case 4:
-                        console.log('object 4')
                         self.drawSprite(self, map, self.tileXstart, self.tileYstart)
                         if(map.boxCoordinates.length < map.obstacles)
                         map.boxCoordinates.push({ x: self.tileXstart, y: self.tileYstart, index: self.mapIndex })
@@ -86,7 +86,6 @@ export class Map {
 
 
     makeSkyTile(self, map) {
-        console.warn(map.skyColor)
         self.context.fillStyle = map.skyColor
         self.context.fillRect(self.tileXstart, self.tileYstart, 50, 50);
     }

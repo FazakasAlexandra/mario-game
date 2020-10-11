@@ -20,36 +20,74 @@ export class MapGenerator {
         this.gameMenu = new GameMenu()
     }
 
+
+    // CREATE MAP BUTTON FUNCTIONALITY
+
+
     renderCreateMapButton() {
-        const modalButtonContainer = this.gameMenu.gameModalButton('create-map', 'CREATE MAP')
-        document.querySelector('#map-generator-menu').insertAdjacentHTML('afterend', modalButtonContainer)
-        document.querySelector('#create-map').classList.add('btn-secondary-outline')
-        this.addCreateMapEvent()
+        this.putCreateMapButtonOnDOM()
+        this.addCreateMapButtonEvent()
     }
 
-    addCreateMapEvent() {
-        console.log(this, this.player.Id)
-        document.querySelector('#create-map').addEventListener('click', () => {
-            console.log(this.skyColor)
-            this.createdMap = {
-                skyColor: this.skyColor,
-                remainedSushi: this.remainedSushi,
-                obstacles: this.obstacles,
-                json_map: this.baseMap,
-                playerId: this.player.Id
-            }
+    putCreateMapButtonOnDOM(){
+        if(document.querySelector('#create-map')){
+            document.querySelector('#create-map').remove()
+        }
+        const modalButtonContainer = this.gameMenu.gameModalButton('create-map', '<img src = "../assets/save.png" id="save">')
+        document.querySelector('#map-generator-menu').insertAdjacentHTML('afterend', modalButtonContainer)
+    }
 
-            this.db.postMap(this.createdMap)
-                .then((res) => {
-                    console.log(res.map_id)
-                    Promise.allSettled([this.db.getMapByMapId(res.map_id), this.db.getMapsByPlayerId(this.player.Id)])
-                        .then((res) => {
-                            this.gameMenu = new GameMenu(res[0].value, res[1].value)
-                            this.gameMenu.setModalBody(this.player, 'mapGenerator', this.createdMap)
-                        })
-                })
+    addCreateMapButtonEvent() {
+        document.querySelector('#create-map').addEventListener('click', () => {
+            this.setCreatedMapObj()
+            this.postMap()
         })
     }
+
+    setCreatedMapObj(){
+        this.createdMap = {
+            skyColor: this.skyColor,
+            remainedSushi: this.remainedSushi,
+            obstacles: this.obstacles,
+            json_map: this.baseMap,
+            playerId: this.player.Id,
+            base64MapCapture : this.captureGeneratedMap()
+        }
+    }
+
+    captureGeneratedMap(){
+        const captureCanvas = document.querySelector('#capture-canvas')
+
+        const context = captureCanvas.getContext('2d')
+        context.drawImage(document.querySelector('#map'), 0, 0)
+
+        const base64Data = captureCanvas.toDataURL()
+
+        return base64Data
+    }
+
+    postMap() {
+        this.db.postMap(this.createdMap).then((res) => {
+
+            Promise.allSettled([this.db.getMapByMapId(res.map_id), this.db.getPlayerMaps(this.player.Id)])
+                .then((res) => {
+                    this.gameMenu = new GameMenu(res[0].value, res[1].value)
+
+                    if(document.querySelector('.modal-body')){
+                        document.querySelector('.modal-body').remove()
+                    }
+
+                    this.gameMenu.setPlayer(this.player)
+                    this.gameMenu.setGameMenuContext('mapGenerator')
+                    this.gameMenu.setModalBody(false)
+                })
+
+        })
+    }
+
+
+    // DRAW MAP FUNCTIONALITY
+
 
     drawBaseMap = () => {
         this.mapIndex = 0
@@ -62,8 +100,10 @@ export class MapGenerator {
                 this.makeBaseTile()
 
                 if (localStorage.getItem('map')) {
+                    // draw the map from local storage
                     this.drawStoredMap()
                 } else {
+                    // make the base for a new map
                     this.baseMap.push({ gridValue: 0, img: '' })
                 }
             }
@@ -76,18 +116,13 @@ export class MapGenerator {
         localStorage.setItem('map', JSON.stringify(map))
     }
 
-    updateStoredMap(chosenIndex) {
-        const storedMap = JSON.parse(localStorage.getItem('map'))
-        storedMap[chosenIndex] = this.baseMap[chosenIndex]
-        this.storeMap(storedMap)
-
-    }
-
     drawStoredMap() {
         if (this.baseMap[this.mapIndex] !== 0) {
             this.drawSprite(this.baseMap[this.mapIndex].img)
         }
     }
+
+    // FUNCTIONS TO DRAW ON CANVAS
 
     makeBaseTile = () => {
         this.setBaseTileFill()
@@ -107,6 +142,99 @@ export class MapGenerator {
         this.context.stroke();
     }
 
+
+    drawSprite = (image) => {
+        const sprite = new Sprite(image, this.context)
+        sprite.drawSpriteOnImageLoad(this.tileXstart, this.tileYstart)
+    }
+
+
+    // MODIFY BASE MAP FUNCTIONALITY
+    
+
+    addBaseTileEvent = () => {
+        this.context.canvas.addEventListener('click', (event) => {
+            const chosenIndex = this.getBaseMapIndex(event)
+
+            if (document.querySelector('.selected')) {
+                this.addImageOnCanvas(chosenIndex)
+
+            } else {
+                this.removeImageFromCanvas(chosenIndex)
+            }
+
+            this.updateStoredMap(chosenIndex)
+        })
+    }
+
+    addImageOnCanvas(chosenIndex){
+        this.baseMap[chosenIndex].gridValue = document.querySelector('.selected').getAttribute('grid-value')
+        this.baseMap[chosenIndex].img = document.querySelector('.selected').getAttribute('src')
+
+        this.isSushiChosen(chosenIndex, 'add')
+        this.isObstacleChosen(chosenIndex, 'add')
+
+        this.updateBaseMap(chosenIndex, true)
+    }
+
+    removeImageFromCanvas(chosenIndex){
+
+        this.isSushiChosen(chosenIndex, 'remove')
+        this.isObstacleChosen(chosenIndex, 'remove')
+
+        this.baseMap[chosenIndex].gridValue = 0
+        this.baseMap[chosenIndex].img = ''
+
+        this.updateBaseMap(chosenIndex, false)
+    }
+
+    isSushiChosen(chosenIndex, action) {
+        if (this.baseMap[chosenIndex].gridValue === '2') {
+
+            if (action === 'add') {
+                this.countBaseMapSushi()
+
+                return
+            }
+
+            this.remainedSushi -= 1
+        }
+    }
+
+    countBaseMapSushi(){
+        let sushiCount = 0
+        
+        this.baseMap.forEach(tile => {
+
+            if(tile.gridValue === '2'){
+                sushiCount++
+            }
+            
+        });
+
+        this.remainedSushi = sushiCount
+    }
+
+    isObstacleChosen(chosenIndex, action) {
+        if (this.baseMap[chosenIndex].gridValue === '4') {
+            if (action === 'add') {
+                this.obstacles += 1
+                return
+            }
+            this.obstacles -= 1
+        }
+    }
+
+    // takes number of obstacles from previous map and sets nr of obstacles on curent map
+    setObstaclesNr(obstaclesNr){
+        this.obstacles = obstaclesNr
+    }
+
+    // takes number of sushi from previous map and sets nr of obstacles on curent map
+    setRemainedSushiNr(sushiNr){
+        this.remainedSushi = sushiNr
+    }
+
     updateBaseMap = (chosenIndex, isSelection) => {
         if (isSelection) {
             this.baseMapLoop(chosenIndex, this.drawSprite)
@@ -115,12 +243,6 @@ export class MapGenerator {
             this.baseMapLoop(chosenIndex, this.makeBaseTile)
         }
     }
-
-    drawSprite = (image) => {
-        const sprite = new Sprite(image, this.context)
-        sprite.drawSpriteOnImageLoad(this.tileXstart, this.tileYstart)
-    }
-
 
     baseMapLoop = (chosenIndex, updateAcction) => {
         this.mapIndex = 0
@@ -136,52 +258,11 @@ export class MapGenerator {
         }
     }
 
-    addBaseTileEvent = () => {
-        this.context.canvas.addEventListener('click', (event) => {
-            const chosenIndex = this.getBaseMapIndex(event)
+    updateStoredMap(chosenIndex) {
+        const storedMap = JSON.parse(localStorage.getItem('map'))
+        storedMap[chosenIndex] = this.baseMap[chosenIndex]
+        this.storeMap(storedMap)
 
-            if (document.querySelector('.selected')) {
-                this.baseMap[chosenIndex].gridValue = document.querySelector('.selected').getAttribute('grid-value')
-                this.baseMap[chosenIndex].img = document.querySelector('.selected').getAttribute('src')
-
-                this.isSushiChosen(chosenIndex, 'add')
-                this.isObstacleChosen(chosenIndex, 'add')
-
-                this.updateStoredMap(chosenIndex)
-                this.updateBaseMap(chosenIndex, true)
-
-            } else {
-                this.baseMap[chosenIndex].gridValue = 0
-                this.baseMap[chosenIndex].img = ''
-
-                this.isSushiChosen(chosenIndex, 'remove')
-                this.isObstacleChosen(chosenIndex, 'remove')
-
-                this.updateStoredMap(chosenIndex)
-                this.updateBaseMap(chosenIndex, false)
-            }
-        })
-    }
-
-    isSushiChosen(chosenIndex, action) {
-        if (this.baseMap[chosenIndex].gridValue === '2') {
-            if (action === 'add') {
-                this.remainedSushi += 1
-                return
-            }
-
-            this.remainedSushi -= 1
-        }
-    }
-
-    isObstacleChosen(chosenIndex, action) {
-        if (this.baseMap[chosenIndex].gridValue === '4') {
-            if (action === 'add') {
-                this.obstacles += 1
-                return
-            }
-            this.obstacles -= 1
-        }
     }
 
     getBaseMapIndex(event) {

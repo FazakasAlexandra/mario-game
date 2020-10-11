@@ -16,15 +16,16 @@ body {
     margin-top: 3%;
 
 }
-#register-container h4{
+
+#register-container h4 {
     margin: 0rem;
     margin-bottom: 1rem;
 }
 
 
 #register-container #logo {
-border: none;
-margin-bottom: 1rem;
+    border: none;
+    margin-bottom: 1rem;
 }
 
 canvas {
@@ -40,7 +41,7 @@ canvas {
     border: none;
 }
 
-#game-info{
+#game-info {
     position: absolute;
     display: none;
     margin: 0.2rem;
@@ -48,7 +49,7 @@ canvas {
     width: fit-content
 }
 
-#update-info{
+#update-info {
     margin-left: 2rem;
 }
 
@@ -59,7 +60,8 @@ canvas {
     height: fit-content;
 }
 
-#play, #create{
+#play,
+#create {
     margin: 0rem;
     margin-left: 1rem;
     width: 5rem;
@@ -71,8 +73,8 @@ canvas {
     justify-content: space-between;
 }
 
-#icons-container .character-option, 
-#icons-container input{
+#icons-container .character-option,
+#icons-container input {
     cursor: pointer;
 }
 
@@ -90,15 +92,16 @@ button {
     flex-direction: column;
     align-items: center;
 }
-.character-option img{
-    background-color: #66B3FF;;
+
+.character-option img {
+    background-color: #66B3FF;
 }
 
 .character-option input {
     width: 1.2rem;
 }
 
-#map-generator-menu{
+#map-generator-menu {
     width: 1200px;
     height: fit-content;
     border-style: solid;
@@ -109,7 +112,7 @@ button {
     align-items: center;
 }
 
-.map-menu-items{
+.map-menu-items {
     max-width: 54px;
     max-height: 54px;
     padding: 0.5rem;
@@ -117,30 +120,25 @@ button {
     cursor: pointer;
 }
 
-.map-menu-items.selected{
+.map-menu-items.selected {
     border-style: solid;
-    border-color:#7FBFFF;
+    border-color: #7FBFFF;
     border-width: 4px;
 }
 
-#create-map{
-    margin: 0rem;
-    margin-right: auto;
-    width: fit-content;
-    color: #0071DE;
-    border-style: solid;
-    border-width: thick;
-    box-shadow: none;
+.paper-btn#create-map, .papper-btn#menu-icon{
+    padding: 0rem;
+    border: none;
 }
 
-#color-options-container{
+#color-options-container {
     padding-right: 1rem;
     padding-left: 2rem;
     border-left-style: solid;
     border-width: thin;
 }
 
-.color-options{
+.color-options {
     width: 1.7rem;
     height: 1.7rem;
     border-radius: 50%;
@@ -149,20 +147,109 @@ button {
     cursor: pointer;
 }
 
-#color-option-0{
+#color-option-0 {
     background-color: #226289;
 }
 
-#color-option-1{
-    background-color:#7FBFFF ;
+#color-option-1 {
+    background-color: #7FBFFF;
 }
 
-#color-option-2{
+#color-option-2 {
     background-color: #9fd8fb;
 }
 
-.selected-color{
+.selected-color {
     border-style: solid;
-    border-color:#47586981;
+    border-color: #47586981;
     border-width: 0.2rem;
+}
+
+#capture {
+    height: fit-content;
+    width: fit-content;
+}
+
+#captures_container {
+    overflow: auto;
+    max-height: 420px;
+    margin-top: 1rem;
+    width: fit-content;
+    display: flex;
+    flex-direction: column-reverse;
+    padding: 1rem;
+    padding-top: 0rem;
+    padding-bottom: 0rem;
+}
+
+#captures_container img {
+    margin-bottom: 1rem;
+    border-radius: 0%;
+    border-style: none;
+    cursor: pointer;
+}
+
+.modal .btn-close{
+    top: 0.5rem;
+}
+
+.modal-container-create-map {
+    position: absolute;
+    top: 0.2rem;
+    background: none;
+    left: 0.2rem;
+    padding: 0rem;
+    width: fit-content;
+    height: fit-content;
+}
+
+#chosen-map-capture{
+    padding: 1rem;
+    border: 0rem;
+}
+
+#chosen-map-options-container{
+    justify-content: center;
+    display: flex;
+}
+
+#menu-icon{
+    border: none;
+    margin-left: 0.2rem;
+    cursor: pointer;
+
+    box-shadow: none;
+    padding: 0rem;
+    margin: 0rem;
+}
+
+#game-menu-icon-container{
+    width: fit-content;
+    height: fit-content;
+    position: absolute;
+    top: 0rem;
+    left: 92%;
+    border: none;
+}
+
+#dots{
+    width: 2rem;
+    height: 2rem;
+    border: none;
+}
+
+.modal-container-menu-icon{
+    position: absolute;
+    top: 0.2rem;
+    background: none;
+    left: 95%;
+    padding: 0rem;
+    width: fit-content;
+    height: fit-content;
+}
+
+#save{
+    width: 1.5rem;
+    height: 1.5rem;
+    border: none;
 }

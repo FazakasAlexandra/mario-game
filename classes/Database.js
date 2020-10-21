@@ -24,7 +24,6 @@ export class Database {
     }
 
     postPlayer(playerObject) {
-        console.log(playerObject)
         return fetch(`${this.baseURL}/post_player.php`, {
             method: 'POST',
             body: JSON.stringify(playerObject),
@@ -34,6 +33,9 @@ export class Database {
         })
             .then(res => res.json())
             .then((response)=>{
+                if(response === "duplicate name"){
+                    return "duplicate name"
+                }
                 playerObject.Id = response.player_id
                 return playerObject
             })

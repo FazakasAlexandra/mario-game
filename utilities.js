@@ -32,7 +32,7 @@ export function getModalBodyContent(modalContext, noBrowse, name) {
         return `                                         
         <div class="modal-body">
           <label class="btn-close" for="modal-2">X</label>
-          <h4 class="modal-title">Welcome back, ${name}</h4>
+          <h4 class="modal-title">Welcome ${name}</h4>
           <h5 class="modal-subtitle">chose your game option : </h5>
           <a id="level-up-option">LEVEL UP</a>
           ${isBrowseOptionAvailable(noBrowse)}
@@ -106,5 +106,41 @@ export function getModalBodyContent(modalContext, noBrowse, name) {
           <a id="edit-map-option">EDIT MAP</a>
           </div>
         </div>`
+    }
+
+    if(modalContext === 'player-not-found'){
+      return`
+      <div class="modal-body">
+         <label class="btn-close" for="modal-2">X</label>
+         <h4 class="modal-title">player not found</h4>
+         <h5 class="modal-subtitle">${name} is not a player, please try again or create a character</h5>
+       </div>`
+    }
+
+    if(modalContext === "no-player-name"){
+      return`
+      <div class="modal-body">
+         <label class="btn-close" for="modal-2">X</label>
+         <h4 class="modal-title">name needed</h4>
+         <h5 class="modal-subtitle">please enter your characters name !</h5>
+       </div>`
+    }
+
+    if(modalContext === "duplicate-name"){
+      return`
+      <div class="modal-body">
+         <label class="btn-close" for="modal-2">X</label>
+         <h4 class="modal-title">name not valid</h4>
+         <h5 class="modal-subtitle">Character name "${name}" is already taken, please chose a different one.</h5>
+       </div>`
+    }
+
+    if(modalContext === "spritesheet-not-chosen"){
+      return`
+      <div class="modal-body">
+         <label class="btn-close" for="modal-2">X</label>
+         <h4 class="modal-title">character skin needed</h4>
+         <h5 class="modal-subtitle">Please chose one of the available character skins.</h5>
+       </div>`
     }
 }

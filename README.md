@@ -1,6 +1,6 @@
 # sushigo 
 
-#### [DEMO](http://45.77.138.77/wordpress/)
+#### [DEMO](http://afazakas.com/sushigo/)
 
 Browser game done with html canvas, javascript and php 
 

@@ -9,3 +9,4 @@ Browser game done with html canvas, javascript and php
 
 > #### Create your own maps and use them !
 ![theme image](http://afazakas.com/sushigo/screenshots/sushigo_4.JPG)
+![theme image](http://afazakas.com/sushigo/screenshots/sushigo_6.JPG)

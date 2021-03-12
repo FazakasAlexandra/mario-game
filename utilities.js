@@ -85,14 +85,12 @@ export function getModalBodyContent(modalContext, noBrowse, name) {
         </div>`
     }
 
-    if (modalContext === 'browseMaps-MapsNotFound') {
+    if (modalContext === 'mapsNotFound') {
         return`
      <div class="modal-body">
         <label class="btn-close" for="modal-2">X</label>
         <h4 class="modal-title">maps not found</h4>
-        <h5 class="modal-subtitle">you have no created maps. Chose one of the above options : </h5>
-        <a id="level-up-option">LEVEL UP</a>
-        <a id="create-map-option">CREATE MAP</a>
+        <h5 class="modal-subtitle">Your list of maps is empty. Create a map and try again</h5>
       </div>`
     }
 

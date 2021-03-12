@@ -38,9 +38,12 @@ export class GameMenu {
     }
 
     handleMapsNotFound(){
-        if (this.browseMapsContext === 'register') {
-            this.addRegisterContextEvents(true)
-            return
+        if(!this.browseMapsContext){
+            this.modalContext = 'level-up-menu'
+        }
+
+        if(this.browseMapsContext === 'mapGenerator'){
+            this.modalContext = 'mapGenerator-menu'
         }
     }
 
@@ -71,6 +74,7 @@ export class GameMenu {
     }
 
     addModalBodyButtonsEvents(noBrowse) {
+        console.log(this.modalContext)
         switch(this.modalContext){
             case 'register' :
                 this.addRegisterContextEvents(noBrowse)
